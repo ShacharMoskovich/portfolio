@@ -22,7 +22,7 @@ export async function generateMetadata({
   if (!project) return {};
   return {
     title: project.title[locale],
-    description: project.subtitle[locale],
+    description: project.description[locale],
   };
 }
 
