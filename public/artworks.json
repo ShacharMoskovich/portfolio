@@ -1,0 +1,64 @@
+[
+  {
+    "slug": "purple-lady",
+    "year": 2026,
+    "accent": "#000000",
+    "title": {
+      "en": "The Purple Lady",
+      "he": "האישה הסגולה"
+    },
+    "description": {
+      "en": "Real story comics",
+      "he": "קומיקס מבוסס על סיפור אמיתי"
+    },
+    "dimensions": {
+      "en": "",
+      "he": ""
+    },
+    "materials": {
+      "en": "Procreate",
+      "he": "Procreate"
+    },
+    "images": [
+      {
+        "url": "https://res.cloudinary.com/dwhfkwjxo/image/upload/v1779623187/%D7%94%D7%90%D7%99%D7%A9%D7%94_%D7%94%D7%A1%D7%92%D7%95%D7%9C%D7%94_%D7%A7%D7%95%D7%9E%D7%99%D7%A7%D7%A1_ryunrs.png",
+        "publicId": "%D7%94%D7%90%D7%99%D7%A9%D7%94_%D7%94%D7%A1%D7%92%D7%95%D7%9C%D7%94_%D7%A7%D7%95%D7%9E%D7%99%D7%A7%D7%A1_ryunrs.png",
+        "caption": {
+          "en": "",
+          "he": ""
+        }
+      }
+    ],
+    "video": "",
+    "cloudinaryFolder": "gallery/purple-lady",
+    "cloudinaryTag": "purple-lady",
+    "imageOrder": "IMG_1535_r1lvnx,IMG_1527_hud27j,IMG_1528_vubxpr,IMG_1529_arql8v,IMG_1530_zeftak,IMG_1531_j3w0zz,IMG_1532_mta8rc,IMG_1533_kgwj9v,IMG_1534_zxhcrz,האישה_הסגולה_קומיקס_ryunrs",
+    "isPublished": true
+  },
+  {
+    "slug": "fish-comics",
+    "year": "2021",
+    "accent": "#000000",
+    "title": {
+      "en": "Fish comics",
+      "he": "קומיקס דגים"
+    },
+    "description": {
+      "en": "Personal comics",
+      "he": "קומיקס אישי"
+    },
+    "dimensions": {
+      "en": "A4",
+      "he": "A4"
+    },
+    "materials": {
+      "en": "Alcoholic markers on paper",
+      "he": "טושים אלכוהוליים על נייר"
+    },
+    "images": [],
+    "video": "",
+    "isPublished": true,
+    "cloudinaryTag": "fish-comics",
+    "imageOrder": "Fish_comics_1_eriuw1,Fish_comics_2_wqz8z7,Fish_comics_3_retfgz,Fish_comics_4_aaiz2f,Fish_comics_2.1_juhzpq,Fish_comics_2.2_e8bpzk,Fish_comics_2.3_sufnyw,Fish_comics_2.4_k362xf"
+  }
+]

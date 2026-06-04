@@ -1,0 +1,130 @@
+import type { Locale } from "@/lib/portfolio/types";
+import Link from "next/link";
+import { ArtworkCarousel } from "@/components/gallery/ArtworkCarousel";
+
+export default async function ArtworkPage({
+  params,
+}: {
+  params: Promise<{ locale: Locale; slug: string }>;
+}) {
+  const { locale, slug } = await params;
+  const isRtl = locale === "he";
+
+  // Fetch artworks
+  let artwork = null;
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/admin/artworks`, {
+      cache: "no-store",
+    });
+    const data = await res.json();
+    artwork = data.artworks?.find((a: any) => a.slug === slug);
+  } catch (err) {
+    console.error("Failed to fetch artworks:", err);
+  }
+
+  if (!artwork) {
+    return (
+      <main className="bg-canvas text-ink min-h-screen">
+        <div className="max-w-site mx-auto px-5 md:px-10 py-12">
+          <p className="text-red-600">Artwork not found</p>
+          <Link href={`/${locale}/gallery`} className="text-sm text-ink-secondary hover:text-ink mt-4 inline-block">
+            ← Back to Gallery
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="bg-canvas text-ink min-h-screen" dir={isRtl ? "rtl" : "ltr"}>
+      <div className="max-w-site mx-auto px-5 md:px-10">
+        <Link href={`/${locale}/gallery`} className="inline-flex items-center gap-2 pt-8 text-sm text-ink-secondary hover:text-ink transition-colors">
+          ← {locale === "he" ? "חזרה לגלריה" : "Back to Gallery"}
+        </Link>
+
+        {/* Layout: TEXT FIRST (col 1-5), PICTURES SECOND (col 8-12) */}
+        <section className="grid md:grid-cols-12 gap-8 md:gap-12 py-12 md:py-20">
+          {/* TEXT - FIRST (col 1-5) */}
+          <div className="md:col-span-5 md:col-start-1">
+            <h1 className={`font-display text-5xl md:text-6xl leading-[0.92] tracking-tight mb-4 ${
+              isRtl ? "font-display-he" : ""
+            } ${artwork.title[locale].match(/[\u0590-\u05FF]/) ? 'font-display-he' : 'font-display'}`}>
+              {artwork.title[locale]}
+            </h1>
+
+            <div className={`space-y-6 text-base md:text-lg leading-relaxed ${isRtl ? "font-body-he" : "font-body"}`}>
+              <p className="text-ink-secondary">{artwork.description[locale]}</p>
+
+              {artwork.year && (
+                <div>
+                  <p className="text-xs tracking-[0.22em] uppercase text-ink-muted mb-2">
+                    {locale === "he" ? "שנה" : "Year"}
+                  </p>
+                  <p className="text-lg">{artwork.year}</p>
+                </div>
+              )}
+
+              {artwork.dimensions && artwork.dimensions[locale] && (
+                <div>
+                  <p className="text-xs tracking-[0.22em] uppercase text-ink-muted mb-2">
+                    {locale === "he" ? "מידות" : "Dimensions"}
+                  </p>
+                  <p className="text-lg">{artwork.dimensions[locale]}</p>
+                </div>
+              )}
+
+              {artwork.materials && artwork.materials[locale] && (
+                <div>
+                  <p className="text-xs tracking-[0.22em] uppercase text-ink-muted mb-2">
+                    {locale === "he" ? "חומרים" : "Materials"}
+                  </p>
+                  <p className="text-lg">{artwork.materials[locale]}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* PICTURES - SECOND (col 8-12) */}
+          <div className="md:col-span-5 md:col-start-8">
+            {artwork.cloudinaryTag ? (
+              <ArtworkCarousel tag={artwork.cloudinaryTag} imageOrder={artwork.imageOrder} />
+            ) : artwork.images && artwork.images.length > 0 ? (
+              <div className="space-y-4">
+                {artwork.images.map((image: any, idx: number) => (
+                  <div key={idx} className="rounded border border-border overflow-hidden bg-surface">
+                    <img
+                      src={image.url}
+                      alt={image.caption?.[locale] || artwork.title[locale]}
+                      className="w-full h-auto"
+                    />
+                    {image.caption && image.caption[locale] && (
+                      <p className="text-sm text-ink-secondary p-4">{image.caption[locale]}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="w-full h-96 bg-surface rounded border border-border flex items-center justify-center text-ink-secondary">
+                No images
+              </div>
+            )}
+
+            {artwork.video && (
+              <div className="mt-4 rounded border border-border overflow-hidden bg-surface">
+                <video
+                  src={artwork.video}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  controls
+                  className="w-full h-auto"
+                />
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}

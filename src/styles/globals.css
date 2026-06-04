@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Heebo:wght@300;400;500;700&display=swap');
+
+@font-face {
+  font-family: 'Tushiaeng';
+  src: url('/fonts/Tushiaeng.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Tushia2';
+  src: url('/fonts/Tushia2.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1;
+}
+
+/* Custom CSS variables for colors */
+:root {
+  --color-canvas: #f5f3f0;
+  --color-surface: #faf9f8;
+  --color-border: #e0dcd8;
+  --color-ink: #1a1a18;
+  --color-ink-secondary: #6b6b68;
+  --color-ink-muted: #a0a09d;
+}

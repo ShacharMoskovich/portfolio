@@ -1,0 +1,161 @@
+[
+  {
+    "slug": "nili",
+    "folder": "nili",
+    "year": 2026,
+    "featured": true,
+    "accent": "#8C5A2B",
+    "videoUrl": "nili-video",
+    "image": "https://res.cloudinary.com/dwhfkwjxo/image/upload/v1779268573/%D7%A1%D7%99%D7%9B%D7%94_%D7%A0%D7%99%D7%9C%D7%99_leo2pn.avif",
+    "title": {
+      "en": "Nili",
+      "he": "ניל\"י"
+    },
+    "subtitle": {
+      "en": "Logo and novelty pin — first prize, 173 entries",
+      "he": "לוגו וסיכת נוי — מקום ראשון, 173 מועמדים"
+    },
+    "award": {
+      "en": "1st prize · Israeli Resistance Pin Collection",
+      "he": "מקום ראשון · אוסף סיכות המחתרת"
+    },
+    "description": {
+      "en": "I created the Nili pin for an anonymous competition by 'Piece of History'. My design competed against 173 other entries and was selected as one of the four finalists. Based on the public vote, my design won first prize. Today, the pin is also sold as part of the Israeli Resistance Pin Collection by Piece of History",
+      "he": "את סיכת ניל\"י יצרתי עבור תחרות אנונימית של 'פיסת היסטוריה'. העיצוב שלי התמודד מול 173 עיצובים נוספים, ונבחר להגיע לרביעיית הגמר. העיצוב שלי לסיכה זכה במקום הראשון בהתבסס על בחירת הקהל. כיום הסיכה נמכרת גם כחלק ממארז סיכות המחתרת של פיסת היסטוריה."
+    },
+    "role": {
+      "en": "Logo design · illustration",
+      "he": "עיצוב לוגו · איור"
+    },
+    "tools": [
+      "Procreate",
+      "Adobe Illustrator"
+    ],
+    "isPublished": true
+  },
+  {
+    "slug": "meetzpe",
+    "folder": "meetzpe",
+    "year": 2026,
+    "featured": true,
+    "accent": "#E04A2A",
+    "image": "https://res.cloudinary.com/dwhfkwjxo/image/upload/v1780577285/%D7%9E%D7%9C%D7%9C2%D7%9E%D7%9C%D7%9C2Artboard_15_oneecd.png",
+    "title": {
+      "en": "Meetzpe",
+      "he": "Meetzpe"
+    },
+    "subtitle": {
+      "en": "Brand identity for a local discovery app",
+      "he": "שפה ויזואלית לאפליקציה מקומית"
+    },
+    "description": {
+      "en": "Meetzpe is a new app for finding what's happening in Mitzpe Ramon. I built the visual identity from scratch: a poster with a QR code, a banner system, the color palette, and the app icon.",
+      "he": "Meetzpe היא אפליקציה חדשה למה שקורה במצפה רמון. בניתי את השפה העיצובית: פוסטר עם QR, מערכת באנרים, פלטת צבעים ואייקון האפליקציה."
+    },
+    "role": {
+      "en": "Brand identity · print · app icon",
+      "he": "מיתוג · דפוס · איקון אפליקציה"
+    },
+    "tools": [
+      "Adobe Illustrator",
+      "Procreate"
+    ],
+    "isPublished": true,
+    "cloudinaryTag": "meetzpe",
+    "imageOrder": "מלל2Artboard_14_z5le6t,מלל2Artboard_13_nuxjvd"
+  },
+  {
+    "slug": "tushia",
+    "folder": "tushia",
+    "year": 2026,
+    "featured": true,
+    "accent": "#1A1A18",
+    "image": "https://res.cloudinary.com/dwhfkwjxo/image/upload/v1780477358/%D7%9E%D7%9C%D7%9C2Artboard_1_epheml.png",
+    "title": {
+      "en": "Tushia",
+      "he": "טושיה"
+    },
+    "subtitle": {
+      "en": "My own studio — live guest illustration at events",
+      "he": "הסטודיו שלי — איור אורחים חי באירועים"
+    },
+    "description": {
+      "en": "Tushia is the studio I founded for live guest illustration. I named it, drew the logo, and designed a custom Hebrew typeface that's now in use across other people's projects. The system carries through to business cards, landing page, and social media.",
+      "he": " טושיה הוא הסטודיו שהקמתי לאיור אורחים חי. נתתי לסטודיו את השם, איירתי את הלוגו, ועיצבתי גופן ייעודי בעברית ובאנגלית. המיתוג נוכח גם בכרטיסי ביקור, שיווק ברשתות החברתיות, וכן באירועי שיווק."
+    },
+    "role": {
+      "en": "Naming · logo · type design · brand",
+      "he": "שמות · לוגו · עיצוב גופן · מיתוג"
+    },
+    "tools": [
+      "Procreate",
+      "Canva"
+    ],
+    "externalUrl": "https://www.instagram.com/hatushia",
+    "isPublished": true
+  },
+  {
+    "slug": "commissions",
+    "folder": "commissions",
+    "year": 2026,
+    "featured": false,
+    "accent": "#A65540",
+    "image": "https://res.cloudinary.com/dwhfkwjxo/image/upload/v1779270174/%D7%92%D7%A8%D7%99%D7%99_qpy3vb.jpg",
+    "title": {
+      "en": "Commissions",
+      "he": "הזמנות אישיות"
+    },
+    "subtitle": {
+      "en": "Custom illustration on commission",
+      "he": "איור מותאם אישית לפי הזמנה"
+    },
+    "description": {
+      "en": "I take custom illustration commissions across digital and traditional media. Past work spans personal portraits, editorial pieces, and gift commissions. Process: brief, two-to-three sketch directions, refinement, final art with revisions.",
+      "he": "אני מקבלת הזמנות אישיות לאיורים — בדיגיטל ובמדיות אנלוגיות. עבודות עבר כוללות דיוקנאות אישיים, איורים עורכיים, ומתנות מותאמות."
+    },
+    "role": {
+      "en": "Illustration · concept · revisions",
+      "he": "איור · קונספט · תיקונים"
+    },
+    "tools": [
+      "Procreate",
+      "Photoshop"
+    ],
+    "isPublished": true,
+    "cloudinaryTag": "commissions",
+    "imageOrder": "IMG_1569_uez8mp,דרורים_ודבורים2Artboard_1-100_j0ck7z,גריי_qpy3vb"
+  },
+  {
+    "slug": "Daphna-Zinder",
+    "folder": "shachar-portfolio/Daphna-Zinder",
+    "year": 2026,
+    "featured": false,
+    "accent": "#000000",
+    "image": "https://res.cloudinary.com/dwhfkwjxo/image/upload/v1780478027/IMG_1896_n49nk3.png",
+    "videoUrl": "",
+    "title": {
+      "en": "Sci-Fi Bookcover",
+      "he": "כריכת ספר מד\"ב"
+    },
+    "subtitle": {
+      "en": "",
+      "he": ""
+    },
+    "description": {
+      "en": "bookcover",
+      "he": "מדב"
+    },
+    "role": {
+      "en": "",
+      "he": ""
+    },
+    "award": {
+      "en": "",
+      "he": ""
+    },
+    "externalUrl": "",
+    "tools": [
+      "Procreate"
+    ]
+  }
+]
