@@ -36,8 +36,11 @@ async function hmac(message: string, secret: string): Promise<string> {
     false,
     ["sign"]
   );
-  const sig = await crypto.subtle.sign("HMAC", key, enc.encode("admin"));
-  return Array.from(new Uint8Array(sig))
+  
+  // This is the line that was likely missing or misconfigured!
+  const signature = await crypto.subtle.sign("HMAC", key, enc.encode(message));
+  
+  return Array.from(new Uint8Array(signature))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 }

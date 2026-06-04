@@ -14,7 +14,6 @@ interface ImageOrdererProps {
 }
 
 export function ImageOrderer({ tag, currentOrder, onChange }: ImageOrdererProps) {
-  const [images, setImages] = useState<Image[]>([]);
   const [orderedImages, setOrderedImages] = useState<Image[]>([]);
   const [loading, setLoading] = useState(true);
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
@@ -31,7 +30,6 @@ export function ImageOrderer({ tag, currentOrder, onChange }: ImageOrdererProps)
         const response = await fetch(`/api/cloudinary/tag?tag=${encodeURIComponent(tag)}`);
         const data = await response.json();
         const fetchedImages = data.images || [];
-        setImages(fetchedImages);
 
         // Sort by current order if exists
         if (currentOrder) {

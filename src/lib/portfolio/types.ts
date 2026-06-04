@@ -1,5 +1,3 @@
-import type { Resource } from "next-intl";
-
 export type Locale = "en" | "he";
 
 export type Bilingual = Record<Locale, string>;

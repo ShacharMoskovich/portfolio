@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 }
 
 // GET all projects (optional, for admin dashboard)
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const fileContent = await readFile(PROJECTS_PATH, "utf-8");
     const projects = JSON.parse(fileContent);

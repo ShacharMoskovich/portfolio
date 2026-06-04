@@ -10,8 +10,9 @@ export default async function ArtworkPage({
   const { locale, slug } = await params;
   const isRtl = locale === "he";
 
-  // Fetch artworks
-  let artwork = null;
+  // Fetch artworks - FIXED TYPE HERE
+  let artwork: any = null;
+  
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/admin/artworks`, {
       cache: "no-store",

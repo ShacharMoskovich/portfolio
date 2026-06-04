@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
 import { cookies } from "next/headers";
 
 export const metadata = { title: "Admin Login" };

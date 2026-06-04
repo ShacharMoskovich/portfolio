@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 }
 
 // GET all artworks
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const fileContent = await readFile(ARTWORKS_PATH, "utf-8");
     const artworks = JSON.parse(fileContent);

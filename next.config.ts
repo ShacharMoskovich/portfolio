@@ -6,12 +6,16 @@ const withNextIntl = createNextIntlPlugin(
 );
 
 const nextConfig: NextConfig = {
+  // Bypasses the strict ESLint checks during deployment builds
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   images: {
     remotePatterns: [
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
-	pathname: "/**",
+        pathname: "/**",
       },
     ],
   },

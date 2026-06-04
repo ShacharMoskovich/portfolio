@@ -19,8 +19,7 @@ export default async function PortfolioIndexPage({
   const isRtl = locale === "he";
 
   // Filter out any projects that are marked as drafts before rendering
-  const publishedProjects = projects.filter((p) => p.isPublished);
-
+  const publishedProjects = projects.filter((p: any) => p.isPublished);
   return (
     <main className="bg-canvas text-ink min-h-screen" dir={isRtl ? "rtl" : "ltr"}>
       <section className="max-w-site mx-auto px-5 md:px-10 pt-24 md:pt-32 pb-14 md:pb-20">
