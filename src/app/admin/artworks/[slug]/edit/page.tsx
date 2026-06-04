@@ -41,10 +41,12 @@ export default function EditArtworkPage({ params }: { params: Promise<{ slug: st
     try {
       const res = await fetch(`/api/admin/artworks/${slug}`);
       if (!res.ok) throw new Error('Failed to fetch artwork');
-      const data = await res.json();
-      if (data && data.title) {
-        setArtwork(data);
-        setImages(data.images || []);
+    const data = await res.json();
+    const artworkData = data.artwork || data;  // ← Unwrap if needed
+    if (artworkData && artworkData.title) {
+      setArtwork(artworkData);
+      setImages(artworkData.images || []);
+      setMainImageIndex(artworkData.mainImageIndex ?? 0);        setImages(data.images || []);
         setMainImageIndex(data.mainImageIndex ?? 0);
       } else {
         setError('Invalid artwork data');
