@@ -17,6 +17,7 @@ export default function EditArtworkPage({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [cloudinaryImages, setCloudinaryImages] = useState<Array<{ url: string; publicId: string }>>([]);
 
   const [formData, setFormData] = useState<Artwork | null>(null);
 
@@ -46,6 +47,26 @@ export default function EditArtworkPage({
 
     loadArtwork();
   }, [params]);
+
+  // Fetch images from Cloudinary when tag changes
+  useEffect(() => {
+    if (!formData || !(formData as any).cloudinaryTag) {
+      setCloudinaryImages([]);
+      return;
+    }
+
+    const fetchImages = async () => {
+      try {
+        const response = await fetch(`/api/cloudinary/tag?tag=${(formData as any).cloudinaryTag}`);
+        const data = await response.json();
+        setCloudinaryImages(data.resources || []);
+      } catch (err) {
+        console.error('Failed to fetch Cloudinary images:', err);
+      }
+    };
+
+    fetchImages();
+  }, [(formData as any)?.cloudinaryTag]);
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
@@ -86,6 +107,10 @@ export default function EditArtworkPage({
 
   const handleImageOrderChange = (newOrder: string) => {
     setFormData({ ...formData, imageOrder: newOrder } as any);
+  };
+
+  const handleMainImageSelect = (index: number) => {
+    setFormData({ ...formData, mainImageIndex: index } as any);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -192,6 +217,46 @@ export default function EditArtworkPage({
                 />
                 <p className="text-xs text-ink-secondary mt-2">Tag your images in Cloudinary with this tag name.</p>
               </div>
+
+              {/* Main Image Selector */}
+              {cloudinaryImages.length > 0 && (
+                <div className="border-2 border-green-400 bg-green-50 rounded p-4">
+                  <h3 className="text-sm font-bold text-green-700 mb-3">📸 Select Main Gallery Image</h3>
+                  <p className="text-xs text-green-600 mb-4">Choose which image appears in the gallery shadowbox</p>
+                  <div className="grid grid-cols-4 gap-3">
+                    {cloudinaryImages.map((img, idx) => (
+                      <div key={idx} className="relative group">
+                        <img
+                          src={img.url}
+                          alt={`Image ${idx + 1}`}
+                          className={`w-full aspect-square object-cover rounded border-2 cursor-pointer transition ${
+                            (formData as any).mainImageIndex === idx
+                              ? 'border-green-600 ring-2 ring-green-400'
+                              : 'border-gray-300 hover:border-green-500'
+                          }`}
+                          onClick={() => handleMainImageSelect(idx)}
+                        />
+                        {(formData as any).mainImageIndex === idx && (
+                          <div className="absolute top-1 right-1 bg-green-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
+                            ★
+                          </div>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleMainImageSelect(idx)}
+                          className={`w-full mt-2 py-1 rounded text-xs font-medium transition ${
+                            (formData as any).mainImageIndex === idx
+                              ? 'bg-green-600 text-white'
+                              : 'bg-gray-200 text-gray-700 hover:bg-green-500 hover:text-white'
+                          }`}
+                        >
+                          {(formData as any).mainImageIndex === idx ? 'Main ★' : 'Set Main'}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Image Reorderer */}
               {(formData as any).cloudinaryTag && (
