@@ -31,7 +31,8 @@ export interface ProjectMeta {
   slug: string;
   title: LocalizedText;
   description: LocalizedText;
-  subtitle?: LocalizedText;  // ← Add this
+  subtitle?: LocalizedText;
+  award?: LocalizedText;  // ← Add this
   accent: string;
   images?: ArtworkImage[];
   cloudinaryTag?: string;
