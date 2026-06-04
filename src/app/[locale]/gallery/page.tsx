@@ -11,12 +11,15 @@ export default async function GalleryPage({
 
   let artworks = [];
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/admin/artworks`, {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const res = await fetch(`${baseUrl}/api/admin/artworks`, {
       cache: "no-store",
     });
     const data = await res.json();
     // Filter only published artworks
-    artworks = (data.artworks || []).filter((a: any) => a.isPublished === true);
+    if (data.artworks && Array.isArray(data.artworks)) {
+      artworks = data.artworks.filter((a: any) => a.isPublished === true);
+    }
   } catch (err) {
     console.error("Failed to fetch artworks:", err);
   }
@@ -32,7 +35,7 @@ export default async function GalleryPage({
           </h1>
 
           {artworks.length === 0 ? (
-            <p className="text-ink-secondary">{locale === "he" ? "אין יצירות מפורסומות עדיין" : "No artworks published yet"}</p>
+            <p className="text-ink-secondary">{locale === "he" ? "אין יצירות פורסומות עדיין" : "No artworks published yet"}</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {artworks.map((artwork: any) => (
@@ -54,7 +57,7 @@ export default async function GalleryPage({
 
                       {/* Title Overlay - Appears on Hover */}
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <h3 className={`text-white text-center px-4 font-medium text-2xl md:text-3xl ${
+                        <h3 className={`text-white text-center px-4 font-medium text-lg md:text-xl ${
                           artwork.title[locale].match(/[\u0590-\u05FF]/) ? 'font-display-he' : 'font-display'
                         }`}>
                           {artwork.title[locale]}
