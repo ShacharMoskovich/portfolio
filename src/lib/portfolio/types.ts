@@ -23,18 +23,26 @@ export interface Artwork {
   cloudinaryFolder?: string;
   imageOrder?: string;
   isPublished?: boolean;
-  mainImageIndex?: number; // NEW: Index of the main/featured image
+  mainImageIndex?: number;
   accent?: string;
 }
 
 export interface ProjectMeta {
   slug: string;
-  title: LocalizedText;
-  description: LocalizedText;
-  subtitle?: LocalizedText;
-  award?: LocalizedText;  // ← Add this
+  folder: string;
+  year: number;
+  featured: boolean;
   accent: string;
-  images?: ArtworkImage[];
+  videoUrl?: string;
+  image: string;
+  title: LocalizedText;
+  subtitle?: LocalizedText;
+  award?: LocalizedText;
+  description: LocalizedText;
+  role?: LocalizedText;
+  tools?: string[];
+  externalUrl?: string;
   cloudinaryTag?: string;
+  imageOrder?: string;
   isPublished?: boolean;
 }
