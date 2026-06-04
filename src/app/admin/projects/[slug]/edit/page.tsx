@@ -95,10 +95,10 @@ export default function EditProjectPage({
   };
 
   const addTool = () => {
-    if (toolInput.trim() && formData && !formData.tools.includes(toolInput.trim())) {
-      setFormData({
-        ...formData,
-        tools: [...formData.tools, toolInput.trim()],
+  if (toolInput.trim() && formData && !(formData.tools || []).includes(toolInput.trim())) {
+    setFormData({
+      ...formData,
+      tools: [...(formData.tools || []), toolInput.trim()],
       });
       setToolInput('');
     }
