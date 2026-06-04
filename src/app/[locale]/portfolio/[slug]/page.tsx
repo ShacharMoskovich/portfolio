@@ -77,7 +77,7 @@ export default async function ProjectPage({
             </h1>
 
             <p className="text-lg text-ink-secondary leading-relaxed font-medium">
-              {project.subtitle[locale]}
+              {project.subtitle?.[locale]}
             </p>
 
             {/* DESCRIPTION MOVED HERE */}
