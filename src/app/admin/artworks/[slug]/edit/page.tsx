@@ -134,14 +134,15 @@ export default function EditArtworkPage({ params }: { params: Promise<{ slug: st
         {images.length > 0 && (
           <div className="border-2 border-blue-300 rounded-lg p-6 bg-blue-50">
             <h2 className="font-bold text-blue-700 mb-4">📸 Select Main Gallery Image</h2>
+            <p className="text-sm text-blue-600 mb-4">Click an image to set it as the gallery thumbnail</p>
             <div className="grid grid-cols-4 gap-3">
               {images.map((img, idx) => (
                 <div key={idx} className="relative">
                   <img
                     src={img.url}
                     alt={`Image ${idx + 1}`}
-                    className={`w-full aspect-square object-cover rounded border-2 cursor-pointer ${
-                      mainImageIndex === idx ? 'border-blue-600' : 'border-gray-300'
+                    className={`w-full aspect-square object-cover rounded border-2 cursor-pointer transition ${
+                      mainImageIndex === idx ? 'border-blue-600 ring-2 ring-blue-400' : 'border-gray-300 hover:border-blue-500'
                     }`}
                     onClick={() => setMainImageIndex(idx)}
                   />
@@ -153,7 +154,7 @@ export default function EditArtworkPage({ params }: { params: Promise<{ slug: st
                   <button
                     type="button"
                     onClick={() => setMainImageIndex(idx)}
-                    className={`w-full mt-2 py-1 rounded text-sm font-medium transition ${
+                    className={`w-full mt-2 py-1 rounded text-xs font-medium transition ${
                       mainImageIndex === idx
                         ? 'bg-blue-600 text-white'
                         : 'bg-gray-200 text-gray-700 hover:bg-blue-500 hover:text-white'

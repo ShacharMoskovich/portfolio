@@ -5,6 +5,10 @@ export interface LocalizedText {
   he: string;
 }
 
+// ==========================================
+// ARTWORK TYPES (for gallery artworks)
+// ==========================================
+
 export interface ArtworkImage {
   url: string;
   publicId?: string;
@@ -23,9 +27,13 @@ export interface Artwork {
   cloudinaryFolder?: string;
   imageOrder?: string;
   isPublished?: boolean;
-  mainImageIndex?: number;
+  mainImageIndex?: number; // Index of featured image for gallery thumbnail
   accent?: string;
 }
+
+// ==========================================
+// PROJECT TYPES (for portfolio projects)
+// ==========================================
 
 export interface ProjectMeta {
   slug: string;

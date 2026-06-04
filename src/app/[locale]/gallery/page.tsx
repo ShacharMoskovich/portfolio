@@ -16,7 +16,6 @@ export default async function GalleryPage({
       cache: "no-store",
     });
     const data = await res.json();
-    // Filter only published artworks
     if (data.artworks && Array.isArray(data.artworks)) {
       artworks = data.artworks.filter((a: any) => a.isPublished === true);
     }
@@ -39,24 +38,17 @@ export default async function GalleryPage({
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {artworks.map((artwork: any) => {
-                // Get the main image index (defaults to 0)
+                // Use mainImageIndex if set, otherwise default to first image
                 const mainIndex = artwork.mainImageIndex ?? 0;
-                const mainImage = artwork.images && artwork.images[mainIndex];
+                const mainImage = artwork.images?.[mainIndex] || artwork.images?.[0];
 
                 return (
                   <Link key={artwork.slug} href={`/${locale}/gallery/${artwork.slug}`}>
                     <div className="group cursor-pointer">
-                      {/* Shadow Box - Image with Title on Hover */}
                       <div className="rounded border border-border overflow-hidden bg-surface aspect-square shadow-lg hover:shadow-xl transition-shadow duration-300 relative">
                         {mainImage ? (
                           <img
                             src={mainImage.url}
-                            alt={artwork.title[locale]}
-                            className="w-full h-full object-cover group-hover:opacity-80 transition-opacity"
-                          />
-                        ) : artwork.images && artwork.images[0] ? (
-                          <img
-                            src={artwork.images[0].url}
                             alt={artwork.title[locale]}
                             className="w-full h-full object-cover group-hover:opacity-80 transition-opacity"
                           />
@@ -66,7 +58,7 @@ export default async function GalleryPage({
                           </div>
                         )}
 
-                        {/* Title Overlay - Appears on Hover */}
+                        {/* Title overlay on hover */}
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           <h3 className={`text-white text-center px-4 font-medium text-lg md:text-xl ${
                             artwork.title[locale].match(/[\u0590-\u05FF]/) ? 'font-display-he' : 'font-display'
