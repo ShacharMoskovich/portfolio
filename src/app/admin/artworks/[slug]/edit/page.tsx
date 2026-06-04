@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
+
 interface Artwork {
   slug: string;
   title: { en: string; he: string };
@@ -68,7 +69,7 @@ export default function EditArtworkPage({ params }: { params: Promise<{ slug: st
         body: JSON.stringify({
           ...artwork,
           images,
-          mainImageIndex, // Save the selected main image index
+          mainImageIndex,
         }),
       });
 
