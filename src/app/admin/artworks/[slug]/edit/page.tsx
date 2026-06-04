@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
 
 interface Artwork {
   slug: string;
@@ -28,7 +27,6 @@ export default function EditArtworkPage({ params }: { params: Promise<{ slug: st
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [images, setImages] = useState<Array<{ url: string; publicId?: string }>>([]);
   const [mainImageIndex, setMainImageIndex] = useState<number>(0);
 
@@ -84,6 +82,10 @@ export default function EditArtworkPage({ params }: { params: Promise<{ slug: st
   };
 
   const handleDelete = async () => {
+    if (!window.confirm(`Are you sure you want to delete "${artwork?.title.en}"? This cannot be undone.`)) {
+      return;
+    }
+
     try {
       const res = await fetch(`/api/admin/artworks/${slug}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Failed to delete artwork');
@@ -230,21 +232,13 @@ export default function EditArtworkPage({ params }: { params: Promise<{ slug: st
           </button>
           <button
             type="button"
-            onClick={() => setDeleteConfirm(true)}
+            onClick={handleDelete}
             className="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700"
           >
             Delete
           </button>
         </div>
       </form>
-
-      <ConfirmDialog
-        open={deleteConfirm}
-        title="Delete Artwork?"
-        message={`Are you sure you want to delete "${artwork.title.en}"? This cannot be undone.`}
-        onConfirm={handleDelete}
-        onCancel={() => setDeleteConfirm(false)}
-      />
     </div>
   );
 }
