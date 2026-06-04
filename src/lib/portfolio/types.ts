@@ -1,54 +1,38 @@
 export type Locale = "en" | "he";
 
-export type Bilingual = Record<Locale, string>;
-
-export interface ProjectMeta {
-  slug: string;
-  folder: string;
-  year: number;
-  featured?: boolean;
-  title: Bilingual;
-  subtitle: Bilingual;
-  description: Bilingual;
-  tools: string[];
-  role: Bilingual;
-  award?: Bilingual;
-  externalUrl?: string;
-  videoUrl?: string;
-  accent: string;
-  image?: string; // Cloudinary URL for portfolio box
+export interface LocalizedText {
+  en: string;
+  he: string;
 }
 
-export interface MediaItem {
-  publicId: string;
-  resourceType: "image" | "video";
-  format: string;
-  width: number;
-  height: number;
-  captionEn?: string;
-  captionHe?: string;
-  alt?: string;
-  order: number;
-  bytes?: number;
-  version?: number;
-  isCover?: boolean;
+export interface ArtworkImage {
+  url: string;
+  publicId?: string;
 }
 
 export interface Artwork {
   slug: string;
-  title: Bilingual;
-  description: Bilingual;
-  dimensions?: Bilingual;
-  materials?: Bilingual;
-  year: number;
-  images: Array<{
-    url: string;
-    publicId: string;
-    caption?: Bilingual;
-  }>;
+  title: LocalizedText;
+  description: LocalizedText;
+  dimensions?: LocalizedText;
+  materials?: LocalizedText;
+  year?: number;
+  images: ArtworkImage[];
   video?: string;
-  accent: string;
   cloudinaryTag?: string;
+  cloudinaryFolder?: string;
   imageOrder?: string;
+  isPublished?: boolean;
+  mainImageIndex?: number; // NEW: Index of the main/featured image
+  accent?: string;
+}
+
+export interface ProjectMeta {
+  slug: string;
+  title: LocalizedText;
+  description: LocalizedText;
+  accent: string;
+  images?: ArtworkImage[];
+  cloudinaryTag?: string;
   isPublished?: boolean;
 }
