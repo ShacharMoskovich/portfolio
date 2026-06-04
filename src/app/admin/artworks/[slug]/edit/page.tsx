@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import ConfirmDialog from '@/components/admin/ConfirmDialog';
-
+import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
 interface Artwork {
   slug: string;
   title: { en: string; he: string };
