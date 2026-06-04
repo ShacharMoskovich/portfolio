@@ -1,5 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -7,32 +6,30 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const tag = searchParams.get('tag');
+
+  if (!tag) {
+    return Response.json({ error: 'Tag is required' }, { status: 400 });
+  }
+
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const tag = searchParams.get("tag");
-
-    if (!tag) {
-      return NextResponse.json({ error: "Tag required" }, { status: 400 });
-    }
-
-    const result = await new Promise((resolve, reject) => {
-      cloudinary.api.resources_by_tag(tag, { max_results: 500 }, (error: any, result: any) => {
-        if (error) reject(error);
-        else resolve(result);
-      });
+    const result = await cloudinary.api.resources_by_tag(tag, {
+      max_results: 500,
     });
 
-    const resources = result as any;
-    const images = (resources.resources || [])
-      .filter((r: any) => r.resource_type === 'image')
-      .map((r: any) => ({
-        url: `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/c_scale,w_800,q_80/${r.public_id}`,
-        publicId: r.public_id,
-      }));
+    const resources = (result.resources || []).map((resource: any) => ({
+      url: resource.secure_url,
+      publicId: resource.public_id,
+    }));
 
-    return NextResponse.json({ images });
+    return Response.json({ resources });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch images" }, { status: 500 });
+    console.error('Cloudinary API error:', error);
+    return Response.json(
+      { error: 'Failed to fetch images from Cloudinary' },
+      { status: 500 }
+    );
   }
 }
