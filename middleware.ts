@@ -31,13 +31,10 @@ function getIp(req: NextRequest): string {
 
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  console.log('MIDDLEWARE RUNNING:', pathname);  // ← add this line
 
-  /*
-  // ---- Protect /admin PAGES (not the login page itself) ----
-  // This is a UX/defense-in-depth gate: it redirects unauthenticated users
-  // away from admin screens. The REAL cryptographic check happens in the
-  // /api/admin route handlers via requireAdmin(). Never rely on this alone.
+  // ---- Protect /admin PAGES (but NOT the login page) ----
+  // Defense-in-depth UX gate. The REAL cryptographic check happens in the
+  // /api/admin route handlers AND in each admin page via requireAdmin().
   if (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login")) {
     const hasCookie = Boolean(req.cookies.get(ADMIN_COOKIE)?.value);
     if (!hasCookie) {
@@ -46,7 +43,6 @@ export default function middleware(req: NextRequest) {
       return NextResponse.redirect(url);
     }
   }
-*/
 
   // Skip the rest of the middleware for API/static/internal routes.
   if (
@@ -80,7 +76,5 @@ export default function middleware(req: NextRequest) {
 }
 
 export const config = {
-  // Note: /admin is now matched so we can gate it. /api is still excluded
-  // (route handlers guard themselves via requireAdmin()).
   matcher: ["/((?!api|_next|static|.*\\..*).*)"],
 };
