@@ -9,10 +9,14 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Check auth server-side before rendering any admin content
-  const isAdmin = await requireAdmin();
-  if (!isAdmin) {
-    redirect('/admin/login');
+  // Don't check auth on the login page itself
+  const isLoginPage = typeof window === 'undefined' ? false : window.location.pathname.includes('/admin/login');
+  
+  if (!isLoginPage) {
+    const isAdmin = await requireAdmin();
+    if (!isAdmin) {
+      redirect('/admin/login');
+    }
   }
 
   return <>{children}</>;
