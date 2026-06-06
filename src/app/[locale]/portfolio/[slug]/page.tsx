@@ -1,22 +1,10 @@
 import { notFound } from 'next/navigation';
 import type { Locale } from '@/lib/portfolio/types';
-
-async function getProject(slug: string) {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/admin/projects/${slug}`,
-      { cache: 'no-store' }
-    );
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
+import { getProject } from '@/lib/portfolio/data';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string; locale: Locale }> }) {
   const { slug, locale } = await params;
-  const project = await getProject(slug);
+  const project = getProject(slug);
 
   if (!project) return { title: 'Not found' };
 
@@ -33,9 +21,9 @@ export default async function PortfolioDetailPage({
 }) {
   const { slug, locale } = await params;
   const isRtl = locale === 'he';
-  const project = await getProject(slug);
+  const project = getProject(slug);
 
-  if (!project) {
+  if (!project || project.isPublished === false) {
     notFound();
   }
 

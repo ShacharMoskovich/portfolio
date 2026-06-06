@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -9,24 +10,17 @@ cloudinary.config({
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("\n=== SAVING CAPTION ===");
-    
-    const cookie = request.cookies.get("shachar_admin");
-    if (!cookie?.value) {
+    // Real cryptographic auth check (not just cookie presence).
+    if (!(await requireAdmin())) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { publicId, caption } = await request.json();
-    console.log("Saving caption for:", publicId);
-    console.log("Caption text:", caption);
 
     // Use context with a proper key-value pair
-    const updateResult = await cloudinary.api.update(publicId, {
+    await cloudinary.api.update(publicId, {
       context: { alt: caption }, // Store caption in 'alt' context field
     });
-    
-    console.log("Update result:", updateResult);
-    console.log("SUCCESS - Caption saved");
 
     return NextResponse.json({ success: true, caption });
   } catch (error) {

@@ -1,6 +1,9 @@
 import type { Locale } from "@/lib/portfolio/types";
 import Link from "next/link";
 import { ArtworkCarousel } from "@/components/gallery/ArtworkCarousel";
+import { getArtwork } from "@/lib/portfolio/data";
+
+export const dynamic = "force-dynamic";
 
 export default async function ArtworkPage({
   params,
@@ -10,18 +13,8 @@ export default async function ArtworkPage({
   const { locale, slug } = await params;
   const isRtl = locale === "he";
 
-  // Fetch artworks - FIXED TYPE HERE
-  let artwork: any = null;
-  
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/admin/artworks`, {
-      cache: "no-store",
-    });
-    const data = await res.json();
-    artwork = data.artworks?.find((a: any) => a.slug === slug);
-  } catch (err) {
-    console.error("Failed to fetch artworks:", err);
-  }
+  // Read directly from the data layer (admin API is auth-protected).
+  const artwork: any = getArtwork(slug);
 
   if (!artwork) {
     return (

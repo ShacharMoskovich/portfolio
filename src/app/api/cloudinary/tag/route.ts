@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
+import { requireAdmin } from '@/lib/auth';
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -7,6 +8,10 @@ cloudinary.config({
 });
 
 export async function GET(request: Request) {
+  if (!(await requireAdmin())) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const { searchParams } = new URL(request.url);
   const tag = searchParams.get('tag');
 

@@ -1,5 +1,8 @@
 import type { Locale } from "@/lib/portfolio/types";
+import { getPublishedArtworks } from "@/lib/portfolio/data";
 import Link from "next/link";
+
+export const dynamic = "force-dynamic";
 
 export default async function GalleryPage({
   params,
@@ -9,19 +12,10 @@ export default async function GalleryPage({
   const { locale } = await params;
   const isRtl = locale === "he";
 
-  let artworks = [];
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/admin/artworks`, {
-      cache: "no-store",
-    });
-    const data = await res.json();
-    if (data.artworks && Array.isArray(data.artworks)) {
-      artworks = data.artworks.filter((a: any) => a.isPublished === true);
-    }
-  } catch (err) {
-    console.error("Failed to fetch artworks:", err);
-  }
+  // Read published artworks directly from the data layer.
+  // (Do NOT fetch /api/admin/artworks — that route is auth-protected and
+  // would return 401 for public visitors.)
+  const artworks = getPublishedArtworks();
 
   return (
     <main className="bg-canvas text-ink min-h-screen" dir={isRtl ? "rtl" : "ltr"}>
