@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/auth';
 import { NextRequest, NextResponse } from "next/server";
 import { writeFile, readFile } from "fs/promises";
 import { join } from "path";
@@ -5,6 +6,10 @@ import { join } from "path";
 const PROJECTS_PATH = join(process.cwd(), "public", "projects.json");
 
 export async function POST(request: NextRequest) {
+  if (!(await requireAdmin())) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
     const newProject = body;
@@ -51,6 +56,10 @@ export async function POST(request: NextRequest) {
 
 // GET all projects (optional, for admin dashboard)
 export async function GET(_request: NextRequest) {
+  if (!(await requireAdmin())) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const fileContent = await readFile(PROJECTS_PATH, "utf-8");
     const projects = JSON.parse(fileContent);

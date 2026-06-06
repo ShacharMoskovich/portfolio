@@ -1,3 +1,4 @@
+import { requireAdmin } from '@/lib/auth';
 import { NextRequest, NextResponse } from "next/server";
 import { writeFile, readFile } from "fs/promises";
 import { join } from "path";
@@ -5,6 +6,9 @@ import { join } from "path";
 const ARTWORKS_PATH = join(process.cwd(), "public", "artworks.json");
 
 export async function POST(request: NextRequest) {
+  if (!(await requireAdmin())) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const body = await request.json();
     const newArtwork = body;
@@ -51,6 +55,9 @@ export async function POST(request: NextRequest) {
 
 // GET all artworks
 export async function GET(_request: NextRequest) {
+ if (!(await requireAdmin())) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const fileContent = await readFile(ARTWORKS_PATH, "utf-8");
     const artworks = JSON.parse(fileContent);
