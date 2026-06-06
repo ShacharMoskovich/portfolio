@@ -1,68 +1,99 @@
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { checkPassword, createSessionToken, ADMIN_COOKIE } from "@/lib/auth";
+'use client';
 
-export const metadata = { title: "Admin Login" };
-export const dynamic = "force-dynamic";
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import type { ProjectMeta } from '@/lib/portfolio/types';
 
-export default async function AdminLoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ error?: string }>;
-}) {
-  const params = await searchParams;
-  const hasError = params?.error === "1";
+export default function AdminProjectsPage() {
+  const [projects, setProjects] = useState<ProjectMeta[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  async function handleLogin(formData: FormData) {
-    "use server";
-    const password = String(formData.get("password") ?? "");
+  useEffect(() => {
+    fetchProjects();
+  }, []);
 
-    // Validate the password directly — no self-fetch to the API route,
-    // which avoids the VERCEL_URL (missing protocol) crash.
-    if (!checkPassword(password)) {
-      redirect("/admin/login?error=1");
+  const fetchProjects = async () => {
+    try {
+      const res = await fetch('/api/admin/projects');
+      if (res.status === 401) {
+        window.location.href = '/admin/login';
+        return;
+      }
+      if (!res.ok) throw new Error('Failed to fetch projects');
+      const data = await res.json();
+      setProjects(data.projects || []);
+    } catch (err) {
+      setError('Failed to load projects');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const cookieStore = await cookies();
-    cookieStore.set(ADMIN_COOKIE, createSessionToken(), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      path: "/",
-      maxAge: 60 * 60 * 12, // 12h, matches token TTL
-    });
+  const handleLogout = async () => {
+    await fetch('/api/admin/logout', { method: 'POST' });
+    window.location.href = '/admin/login';
+  };
 
-    redirect("/admin/portfolio");
-  }
+  if (loading) return <div className="p-8">Loading projects...</div>;
 
   return (
-    <main className="bg-canvas min-h-screen grid place-items-center px-4">
-      <div className="w-full max-w-sm">
-        <div className="mb-12">
-          <h1 className="font-display text-4xl mb-2">Admin</h1>
-          <p className="text-sm text-ink-secondary">Enter your password to continue</p>
-        </div>
-        {hasError && (
-          <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm">
-            Incorrect password. Please try again.
-          </div>
-        )}
-        <form action={handleLogin} className="space-y-4">
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            className="w-full bg-surface border border-border px-4 py-3 text-ink text-sm placeholder-ink-muted focus:outline-none focus:border-accent"
-            required
-          />
-          <button
-            type="submit"
-            className="w-full bg-ink text-canvas py-3 text-sm font-medium uppercase tracking-wider hover:bg-accent transition-colors"
-          >
-            Sign In
+    <div className="max-w-6xl mx-auto p-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl font-bold">Projects</h1>
+        <div className="flex items-center gap-3">
+          <Link href="/admin/artworks" className="px-4 py-2 border border-border rounded hover:bg-surface text-sm">
+            Artworks →
+          </Link>
+          <Link href="/admin/projects/new" className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            New Project
+          </Link>
+          <button onClick={handleLogout} className="px-4 py-2 text-sm text-ink-secondary hover:text-ink">
+            Logout
           </button>
-        </form>
+        </div>
       </div>
-    </main>
+
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+          {error}
+        </div>
+      )}
+
+      {projects.length === 0 ? (
+        <p className="text-gray-500">No projects yet</p>
+      ) : (
+        <div className="grid gap-4">
+          {projects.map((project) => (
+            <Link key={project.slug} href={`/admin/projects/${project.slug}/edit`}>
+              <div className="border rounded p-6 hover:bg-gray-50 cursor-pointer transition">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h2 className="font-display text-2xl mb-2">{project.title.en}</h2>
+                    {project.subtitle?.en && (
+                      <p className="text-sm text-ink-secondary mb-2">{project.subtitle.en}</p>
+                    )}
+                    <div className="flex gap-4 text-xs">
+                      <span className="text-ink-muted">Year: {project.year}</span>
+                      <span className="text-ink-muted">Featured: {project.featured ? 'Yes' : 'No'}</span>
+                      <span className="text-ink-muted">Published: {project.isPublished ? 'Yes' : 'No'}</span>
+                    </div>
+                  </div>
+                  <div
+                    className="w-20 h-20 rounded flex-shrink-0"
+                    style={{
+                      backgroundImage: `url(${project.image})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                    }}
+                  />
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

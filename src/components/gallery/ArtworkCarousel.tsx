@@ -21,7 +21,9 @@ export function ArtworkCarousel({ tag, imageOrder }: CarouselProps) {
   useEffect(() => {
     async function fetchImages() {
       try {
-        const response = await fetch(`/api/cloudinary/tag?tag=${encodeURIComponent(tag)}`);
+        // Use the PUBLIC gallery endpoint (returns { images }), not the
+        // auth-protected /api/cloudinary/tag route.
+        const response = await fetch(`/api/gallery/${encodeURIComponent(tag)}`);
         const data = await response.json();
         let fetchedImages = data.images || [];
 

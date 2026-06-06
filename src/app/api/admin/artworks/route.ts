@@ -1,72 +1,49 @@
 import { requireAdmin } from '@/lib/auth';
-import { NextRequest, NextResponse } from "next/server";
-import { writeFile, readFile } from "fs/promises";
-import { join } from "path";
+import { NextRequest, NextResponse } from 'next/server';
+import { getArtworks, saveArtworks } from '@/lib/blob-data';
 
-const ARTWORKS_PATH = join(process.cwd(), "public", "artworks.json");
+export async function GET(_request: NextRequest) {
+  if (!(await requireAdmin())) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  try {
+    const artworks = await getArtworks();
+    return NextResponse.json({ artworks });
+  } catch (error) {
+    console.error('Error reading artworks:', error);
+    return NextResponse.json({ error: 'Failed to read artworks' }, { status: 500 });
+  }
+}
 
 export async function POST(request: NextRequest) {
   if (!(await requireAdmin())) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
   try {
-    const body = await request.json();
-    const newArtwork = body;
+    const newArtwork = await request.json();
 
-    // Validate required fields
     if (!newArtwork.slug || !newArtwork.title || !newArtwork.description) {
       return NextResponse.json(
-        { error: "Missing required fields: slug, title, description" },
+        { error: 'Missing required fields: slug, title, description' },
         { status: 400 }
       );
     }
 
-    // Read existing artworks
-    const fileContent = await readFile(ARTWORKS_PATH, "utf-8");
-    const artworks = JSON.parse(fileContent);
+    const artworks = await getArtworks();
 
-    // Check if slug already exists
     if (artworks.some((a: any) => a.slug === newArtwork.slug)) {
       return NextResponse.json(
-        { error: "Artwork with this slug already exists" },
+        { error: 'Artwork with this slug already exists' },
         { status: 400 }
       );
     }
 
-    // Add new artwork
     artworks.push(newArtwork);
+    await saveArtworks(artworks);
 
-    // Write back to file
-    await writeFile(ARTWORKS_PATH, JSON.stringify(artworks, null, 2));
-
-    return NextResponse.json({
-      success: true,
-      message: "Artwork created successfully",
-      artwork: newArtwork,
-    });
+    return NextResponse.json({ success: true, artwork: newArtwork });
   } catch (error) {
-    console.error("Error creating artwork:", error);
-    return NextResponse.json(
-      { error: "Failed to create artwork" },
-      { status: 500 }
-    );
-  }
-}
-
-// GET all artworks
-export async function GET(_request: NextRequest) {
- if (!(await requireAdmin())) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-  try {
-    const fileContent = await readFile(ARTWORKS_PATH, "utf-8");
-    const artworks = JSON.parse(fileContent);
-    return NextResponse.json({ artworks });
-  } catch (error) {
-    console.error("Error reading artworks:", error);
-    return NextResponse.json(
-      { error: "Failed to read artworks" },
-      { status: 500 }
-    );
+    console.error('Error creating artwork:', error);
+    return NextResponse.json({ error: 'Failed to create artwork' }, { status: 500 });
   }
 }

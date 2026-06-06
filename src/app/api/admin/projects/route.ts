@@ -1,74 +1,47 @@
 import { requireAdmin } from '@/lib/auth';
-import { NextRequest, NextResponse } from "next/server";
-import { writeFile, readFile } from "fs/promises";
-import { join } from "path";
+import { NextRequest, NextResponse } from 'next/server';
+import { getProjects, saveProjects } from '@/lib/blob-data';
 
-const PROJECTS_PATH = join(process.cwd(), "public", "projects.json");
+export async function GET(_request: NextRequest) {
+  if (!(await requireAdmin())) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  try {
+    const projects = await getProjects();
+    return NextResponse.json({ projects });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to read projects' }, { status: 500 });
+  }
+}
 
 export async function POST(request: NextRequest) {
   if (!(await requireAdmin())) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
-
   try {
-    const body = await request.json();
-    const newProject = body;
+    const newProject = await request.json();
 
-    // Validate required fields
     if (!newProject.slug || !newProject.title || !newProject.description) {
       return NextResponse.json(
-        { error: "Missing required fields: slug, title, description" },
+        { error: 'Missing required fields: slug, title, description' },
         { status: 400 }
       );
     }
 
-    // Read existing projects
-    const fileContent = await readFile(PROJECTS_PATH, "utf-8");
-    const projects = JSON.parse(fileContent);
+    const projects = await getProjects();
 
-    // Check if slug already exists
     if (projects.some((p: any) => p.slug === newProject.slug)) {
       return NextResponse.json(
-        { error: "Project with this slug already exists" },
+        { error: 'Project with this slug already exists' },
         { status: 400 }
       );
     }
 
-    // Add new project
     projects.push(newProject);
+    await saveProjects(projects);
 
-    // Write back to file
-    await writeFile(PROJECTS_PATH, JSON.stringify(projects, null, 2));
-
-    return NextResponse.json({
-      success: true,
-      message: "Project created successfully",
-      project: newProject,
-    });
+    return NextResponse.json({ success: true, project: newProject });
   } catch (error) {
-    console.error("Error creating project:", error);
-    return NextResponse.json(
-      { error: "Failed to create project" },
-      { status: 500 }
-    );
-  }
-}
-
-// GET all projects (optional, for admin dashboard)
-export async function GET(_request: NextRequest) {
-  if (!(await requireAdmin())) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  try {
-    const fileContent = await readFile(PROJECTS_PATH, "utf-8");
-    const projects = JSON.parse(fileContent);
-    return NextResponse.json({ projects });
-  } catch (error) {
-    console.error("Error reading projects:", error);
-    return NextResponse.json(
-      { error: "Failed to read projects" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create project' }, { status: 500 });
   }
 }

@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { projects } from "@/lib/portfolio/data";
+import { getProjects } from "@/lib/blob-data";
 import type { Locale } from "@/lib/portfolio/types";
 import Link from "next/link";
 
@@ -19,7 +19,8 @@ export default async function PortfolioIndexPage({
   const isRtl = locale === "he";
 
   // Filter out any projects that are marked as drafts before rendering
-  const publishedProjects = projects.filter((p: any) => p.isPublished);
+  const allProjects = await getProjects();
+  const publishedProjects = allProjects.filter((p: any) => p.isPublished);
   return (
     <main className="bg-canvas text-ink min-h-screen" dir={isRtl ? "rtl" : "ltr"}>
       <section className="max-w-site mx-auto px-5 md:px-10 pt-24 md:pt-32 pb-14 md:pb-20">

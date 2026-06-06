@@ -1,5 +1,5 @@
 import type { Locale } from "@/lib/portfolio/types";
-import { getPublishedArtworks } from "@/lib/portfolio/data";
+import { getArtworks } from "@/lib/blob-data";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +15,8 @@ export default async function GalleryPage({
   // Read published artworks directly from the data layer.
   // (Do NOT fetch /api/admin/artworks — that route is auth-protected and
   // would return 401 for public visitors.)
-  const artworks = getPublishedArtworks();
+  const all = await getArtworks();
+  const artworks = all.filter((a: any) => a.isPublished === true);
 
   return (
     <main className="bg-canvas text-ink min-h-screen" dir={isRtl ? "rtl" : "ltr"}>

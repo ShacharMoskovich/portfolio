@@ -1,7 +1,7 @@
 import type { Locale } from "@/lib/portfolio/types";
 import Link from "next/link";
 import { ArtworkCarousel } from "@/components/gallery/ArtworkCarousel";
-import { getArtwork } from "@/lib/portfolio/data";
+import { getArtworks } from "@/lib/blob-data";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +14,8 @@ export default async function ArtworkPage({
   const isRtl = locale === "he";
 
   // Read directly from the data layer (admin API is auth-protected).
-  const artwork: any = getArtwork(slug);
+  const all = await getArtworks();
+  const artwork: any = all.find((a: any) => a.slug === slug);
 
   if (!artwork) {
     return (

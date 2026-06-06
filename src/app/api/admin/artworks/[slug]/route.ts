@@ -1,33 +1,24 @@
 import { requireAdmin } from '@/lib/auth';
-import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-
-const ARTWORKS_FILE = path.join(process.cwd(), "public", "artworks.json");
+import { NextRequest, NextResponse } from 'next/server';
+import { getArtworks, saveArtworks } from '@/lib/blob-data';
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-   if (!(await requireAdmin())) {
+  if (!(await requireAdmin())) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
   try {
     const { slug } = await params;
-
-    const fileContent = fs.readFileSync(ARTWORKS_FILE, "utf-8");
-    const artworks = JSON.parse(fileContent);
-
+    const artworks = await getArtworks();
     const artwork = artworks.find((a: any) => a.slug === slug);
-
     if (!artwork) {
-      return NextResponse.json({ error: "Artwork not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Artwork not found' }, { status: 404 });
     }
-
     return NextResponse.json({ artwork });
   } catch (error) {
-    console.error("Error:", error);
-    return NextResponse.json({ error: "Failed to fetch artwork" }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch artwork' }, { status: 500 });
   }
 }
 
@@ -35,28 +26,25 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-   if (!(await requireAdmin())) {
+  if (!(await requireAdmin())) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
   try {
     const { slug } = await params;
     const updatedData = await request.json();
 
-    const fileContent = fs.readFileSync(ARTWORKS_FILE, "utf-8");
-    let artworks = JSON.parse(fileContent);
-
+    const artworks = await getArtworks();
     const index = artworks.findIndex((a: any) => a.slug === slug);
     if (index === -1) {
-      return NextResponse.json({ error: "Artwork not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Artwork not found' }, { status: 404 });
     }
 
-    artworks[index] = { ...artworks[index], ...updatedData };
-    fs.writeFileSync(ARTWORKS_FILE, JSON.stringify(artworks, null, 2));
+    artworks[index] = { ...artworks[index], ...updatedData, slug };
+    await saveArtworks(artworks);
 
     return NextResponse.json({ success: true, artwork: artworks[index] });
   } catch (error) {
-    console.error("Error:", error);
-    return NextResponse.json({ error: "Failed to update artwork" }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to update artwork' }, { status: 500 });
   }
 }
 
@@ -64,28 +52,22 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-   if (!(await requireAdmin())) {
+  if (!(await requireAdmin())) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
   try {
     const { slug } = await params;
-
-    const fileContent = fs.readFileSync(ARTWORKS_FILE, "utf-8");
-    let artworks = JSON.parse(fileContent);
-
+    const artworks = await getArtworks();
     const index = artworks.findIndex((a: any) => a.slug === slug);
     if (index === -1) {
-      return NextResponse.json({ error: "Artwork not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Artwork not found' }, { status: 404 });
     }
 
-    const deletedArtwork = artworks[index];
-    artworks.splice(index, 1);
+    const deleted = artworks.splice(index, 1)[0];
+    await saveArtworks(artworks);
 
-    fs.writeFileSync(ARTWORKS_FILE, JSON.stringify(artworks, null, 2));
-
-    return NextResponse.json({ success: true, artwork: deletedArtwork });
+    return NextResponse.json({ success: true, artwork: deleted });
   } catch (error) {
-    console.error("Error:", error);
-    return NextResponse.json({ error: "Failed to delete artwork" }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to delete artwork' }, { status: 500 });
   }
 }

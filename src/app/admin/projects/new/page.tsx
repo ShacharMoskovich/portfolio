@@ -104,7 +104,7 @@ export default function AdminProjectsPage() {
 
       setSuccess('Project created successfully!');
       setTimeout(() => {
-        router.push('/admin/portfolio');
+        router.push('/admin/projects');
       }, 1500);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');

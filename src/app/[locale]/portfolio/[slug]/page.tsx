@@ -1,10 +1,13 @@
 import { notFound } from 'next/navigation';
 import type { Locale } from '@/lib/portfolio/types';
-import { getProject } from '@/lib/portfolio/data';
+import { getProjects } from '@/lib/blob-data';
+import { requireAdmin } from '@/lib/auth';
+import { ProjectGalleryLightbox } from '@/components/portfolio/ProjectGalleryLightbox';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string; locale: Locale }> }) {
   const { slug, locale } = await params;
-  const project = getProject(slug);
+  const allProjects = await getProjects();
+  const project = allProjects.find((p: any) => p.slug === slug);
 
   if (!project) return { title: 'Not found' };
 
@@ -21,11 +24,14 @@ export default async function PortfolioDetailPage({
 }) {
   const { slug, locale } = await params;
   const isRtl = locale === 'he';
-  const project = getProject(slug);
+  const allProjects = await getProjects();
+  const project = allProjects.find((p: any) => p.slug === slug);
 
   if (!project || project.isPublished === false) {
     notFound();
   }
+
+  const isAdmin = await requireAdmin();
 
   return (
     <main className="bg-canvas text-ink min-h-screen" dir={isRtl ? 'rtl' : 'ltr'}>
@@ -115,6 +121,11 @@ export default async function PortfolioDetailPage({
               )}
             </div>
           </div>
+        </div>
+
+        {/* PROJECT GALLERY + VIDEO */}
+        <div className="pb-16 md:pb-24">
+          <ProjectGalleryLightbox slug={slug} isAdmin={isAdmin} />
         </div>
       </div>
     </main>

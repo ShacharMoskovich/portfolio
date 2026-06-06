@@ -9,6 +9,28 @@ interface NavbarProps {
   locale: Locale;
 }
 
+const INSTAGRAM_URL = 'https://www.instagram.com/shachar_moskovich/';
+
+function InstagramIcon() {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+    </svg>
+  );
+}
+
 export function Navbar({ locale }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
@@ -22,9 +44,7 @@ export function Navbar({ locale }: NavbarProps) {
     { label: { en: 'Contact', he: 'יצירת קשר' }, href: '/contact' },
   ];
 
-  const isActive = (href: string) => {
-    return pathname.includes(href);
-  };
+  const isActive = (href: string) => pathname.includes(href);
 
   return (
     <nav
@@ -32,7 +52,16 @@ export function Navbar({ locale }: NavbarProps) {
       dir={isRtl ? 'rtl' : 'ltr'}
     >
       <div className="px-5 md:px-10">
-        <div className="flex items-center justify-center h-16 md:h-20">
+        <div className="flex items-center justify-between h-16 md:h-20">
+          {/* LOGO (start corner) */}
+          <Link href={`/${locale}`} className="flex items-center shrink-0" aria-label="Home">
+            <img
+              src="/logo.png"
+              alt="Shachar Moskovich"
+              className="h-9 w-9 md:h-11 md:w-11 object-contain"
+            />
+          </Link>
+
           {/* Desktop Nav - Centered */}
           <div className="hidden md:flex gap-12 items-center">
             {navItems.map((item) => (
@@ -56,31 +85,41 @@ export function Navbar({ locale }: NavbarProps) {
               className={`text-lg tracking-[0.1em] uppercase text-ink-secondary hover:text-ink transition-colors border-l border-border pl-12 ${locale === 'en' ? 'font-display-he' : 'font-display'}`}
             >
               {locale === 'en' ? 'עברית' : 'English'}
-            </Link>          
-            </div>
+            </Link>
+          </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden flex flex-col gap-1.5 absolute left-5"
-            aria-label="Toggle menu"
+          {/* INSTAGRAM (end corner) - desktop */}
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram"
+            className="hidden md:flex items-center justify-center text-ink-secondary hover:text-ink transition-colors shrink-0"
           >
-            <span
-              className={`w-5 h-0.5 bg-ink transition-all ${
-                isOpen ? 'rotate-45 translate-y-2' : ''
-              }`}
-            />
-            <span
-              className={`w-5 h-0.5 bg-ink transition-opacity ${
-                isOpen ? 'opacity-0' : ''
-              }`}
-            />
-            <span
-              className={`w-5 h-0.5 bg-ink transition-all ${
-                isOpen ? '-rotate-45 -translate-y-2' : ''
-              }`}
-            />
-          </button>
+            <InstagramIcon />
+          </a>
+
+          {/* Mobile right side: Instagram + Menu button */}
+          <div className="md:hidden flex items-center gap-4">
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="text-ink-secondary hover:text-ink transition-colors"
+            >
+              <InstagramIcon />
+            </a>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="flex flex-col gap-1.5"
+              aria-label="Toggle menu"
+            >
+              <span className={`w-5 h-0.5 bg-ink transition-all ${isOpen ? 'rotate-45 translate-y-2' : ''}`} />
+              <span className={`w-5 h-0.5 bg-ink transition-opacity ${isOpen ? 'opacity-0' : ''}`} />
+              <span className={`w-5 h-0.5 bg-ink transition-all ${isOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
