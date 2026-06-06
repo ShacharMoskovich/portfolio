@@ -1,10 +1,19 @@
+import { requireAdmin } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Check auth server-side before rendering any admin content
+  const isAdmin = await requireAdmin();
+  if (!isAdmin) {
+    redirect('/admin/login');
+  }
+
   return <>{children}</>;
 }
