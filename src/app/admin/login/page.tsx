@@ -1,35 +1,38 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import { checkPassword, createSessionToken, ADMIN_COOKIE } from "@/lib/auth";
 
 export const metadata = { title: "Admin Login" };
+export const dynamic = "force-dynamic";
 
-export default async function AdminLoginPage() {
+export default async function AdminLoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const params = await searchParams;
+  const hasError = params?.error === "1";
+
   async function handleLogin(formData: FormData) {
     "use server";
-    const password = formData.get("password");
-    const res = await fetch(`${process.env.VERCEL_URL || "http://localhost:3000"}/api/admin/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
-    });
-    if (res.ok) {
-      const setCookie = res.headers.get("set-cookie");
-      if (setCookie) {
-        const cookieStore = await cookies();
-  
-        // Safely extract the token name and value
-        const [nameValue] = setCookie.split(";");
-        const [name, value] = nameValue.split("=");
-              
-        // Use the approved cookie jar API instead of modifying headers directly
-        cookieStore.set(name.trim(), value.trim(), {
-          path: "/",
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-        });
-      }
-      redirect("/admin/portfolio");
+    const password = String(formData.get("password") ?? "");
+
+    // Validate the password directly — no self-fetch to the API route,
+    // which avoids the VERCEL_URL (missing protocol) crash.
+    if (!checkPassword(password)) {
+      redirect("/admin/login?error=1");
     }
+
+    const cookieStore = await cookies();
+    cookieStore.set(ADMIN_COOKIE, createSessionToken(), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60 * 12, // 12h, matches token TTL
+    });
+
+    redirect("/admin/portfolio");
   }
 
   return (
@@ -39,6 +42,11 @@ export default async function AdminLoginPage() {
           <h1 className="font-display text-4xl mb-2">Admin</h1>
           <p className="text-sm text-ink-secondary">Enter your password to continue</p>
         </div>
+        {hasError && (
+          <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm">
+            Incorrect password. Please try again.
+          </div>
+        )}
         <form action={handleLogin} className="space-y-4">
           <input
             type="password"

@@ -24,6 +24,10 @@ export default function AdminArtworksPage() {
   async function fetchArtworks() {
     try {
       const response = await fetch('/api/admin/artworks');
+      if (response.status === 401) {
+        window.location.href = '/admin/login';
+        return;
+      }
       const data = await response.json();
       setArtworks(data.artworks || []);
     } catch (err) {
