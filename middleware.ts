@@ -33,6 +33,7 @@ export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   console.log('MIDDLEWARE RUNNING:', pathname);  // ← add this line
 
+  /*
   // ---- Protect /admin PAGES (not the login page itself) ----
   // This is a UX/defense-in-depth gate: it redirects unauthenticated users
   // away from admin screens. The REAL cryptographic check happens in the
@@ -45,6 +46,7 @@ export default function middleware(req: NextRequest) {
       return NextResponse.redirect(url);
     }
   }
+*/
 
   // Skip the rest of the middleware for API/static/internal routes.
   if (
