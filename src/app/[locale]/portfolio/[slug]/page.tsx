@@ -110,18 +110,8 @@ export default async function PortfolioDetailPage({
               )}
             </div>
 
-            {/* IMAGE + GALLERY - RIGHT (7 cols) */}
-            <div className="md:col-span-7 space-y-8">
-              {/* PREVIEW IMAGE */}
-              {project.image && (
-                <img
-                  src={project.image}
-                  alt={project.title[locale]}
-                  className="w-full rounded border border-border"
-                />
-              )}
-
-              {/* PROJECT GALLERY - 3-4 COLUMN MASONRY */}
+            {/* GALLERY - RIGHT (7 cols) */}
+            <div className="md:col-span-7">
               <ProjectGalleryLightbox slug={slug} isAdmin={isAdmin} />
             </div>
           </div>
