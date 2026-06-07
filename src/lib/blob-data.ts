@@ -22,21 +22,8 @@ async function readBlob<T>(key: string, fallback: T[]): Promise<T[]> {
   try {
     const result = await get(key, { access: 'private' });
     if (!result || result.statusCode !== 200) return fallback;
-    
-    // Read from the stream
-    const reader = result.stream.getReader();
-    const chunks: Uint8Array[] = [];
-    let done = false;
-    
-    while (!done) {
-      const { value, done: streamDone } = await reader.read();
-      if (value) chunks.push(value);
-      done = streamDone;
-    }
-    
-    const text = new TextDecoder().decode(
-      new Uint8Array(chunks.reduce((acc, chunk) => [...acc, ...chunk], []))
-    );
+    // Wrap the stream in a Response to read it as text cleanly.
+    const text = await new Response(result.stream).text();
     return JSON.parse(text) as T[];
   } catch {
     return fallback;
