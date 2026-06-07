@@ -110,7 +110,12 @@ export default function EditArtworkPage({
   };
 
   const handleMainImageSelect = (index: number) => {
-    setFormData({ ...formData, mainImageIndex: index } as any);
+    const chosen = cloudinaryImages[index];
+    setFormData({
+      ...formData,
+      mainImageIndex: index,
+      mainImageUrl: chosen?.url || '',
+    } as any);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

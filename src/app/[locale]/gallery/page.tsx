@@ -33,9 +33,13 @@ export default async function GalleryPage({
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {artworks.map((artwork: any) => {
-                // Use mainImageIndex if set, otherwise default to first image
+                // Prefer the explicitly chosen main image URL; fall back to
+                // the images array, then to nothing.
                 const mainIndex = artwork.mainImageIndex ?? 0;
-                const mainImage = artwork.images?.[mainIndex] || artwork.images?.[0];
+                const mainImage =
+                  artwork.mainImageUrl
+                    ? { url: artwork.mainImageUrl }
+                    : (artwork.images?.[mainIndex] || artwork.images?.[0]);
 
                 return (
                   <Link key={artwork.slug} href={`/${locale}/gallery/${artwork.slug}`}>

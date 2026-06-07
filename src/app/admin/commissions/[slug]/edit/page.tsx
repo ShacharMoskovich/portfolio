@@ -61,7 +61,8 @@ export default function EditCommissionPage({
 
   const handleMainImageSelect = (index: number) => {
     if (!formData) return;
-    setFormData({ ...formData, mainImageIndex: index });
+    const chosen = cloudinaryImages[index];
+    setFormData({ ...formData, mainImageIndex: index, image: chosen?.url || formData.image });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
