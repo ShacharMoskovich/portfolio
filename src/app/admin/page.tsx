@@ -1,0 +1,170 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+
+interface Item {
+  slug: string;
+  title: { en: string; he: string };
+  isPublished?: boolean;
+}
+
+export default function AdminDashboard() {
+  const [artworks, setArtworks] = useState<Item[]>([]);
+  const [projects, setProjects] = useState<Item[]>([]);
+  const [commissions, setCommissions] = useState<Item[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    async function loadAll() {
+      try {
+        const [aRes, pRes, cRes] = await Promise.all([
+          fetch('/api/admin/artworks'),
+          fetch('/api/admin/projects'),
+          fetch('/api/admin/commissions'),
+        ]);
+
+        if (aRes.status === 401 || pRes.status === 401 || cRes.status === 401) {
+          window.location.href = '/admin/login';
+          return;
+        }
+
+        const aData = await aRes.json();
+        const pData = await pRes.json();
+        const cData = await cRes.json();
+
+        setArtworks(aData.artworks || []);
+        setProjects(pData.projects || []);
+        setCommissions(cData.commissions || []);
+      } catch (err) {
+        setError('Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadAll();
+  }, []);
+
+  const handleLogout = async () => {
+    await fetch('/api/admin/logout', { method: 'POST' });
+    window.location.href = '/admin/login';
+  };
+
+  if (loading) return <div className="p-8 text-ink">Loading dashboard…</div>;
+
+  return (
+    <div className="max-w-5xl mx-auto p-6 md:p-10">
+      <div className="flex justify-between items-center mb-10">
+        <h1 className="font-display text-4xl md:text-5xl">Admin Dashboard</h1>
+        <button
+          onClick={handleLogout}
+          className="px-4 py-2 text-sm border border-border rounded hover:bg-surface"
+        >
+          Logout
+        </button>
+      </div>
+
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+          {error}
+        </div>
+      )}
+
+      <Section
+        title="Artworks"
+        items={artworks}
+        editBase="/admin/artworks"
+        viewBase="/en/gallery"
+        newHref="/admin/artworks/new"
+      />
+
+      <Section
+        title="Projects"
+        items={projects}
+        editBase="/admin/projects"
+        viewBase="/en/portfolio"
+        newHref="/admin/projects/new"
+      />
+
+      <Section
+        title="Commissions"
+        items={commissions}
+        editBase="/admin/commissions"
+        viewBase="/en/portfolio/commissions"
+        newHref="/admin/commissions/new"
+      />
+    </div>
+  );
+}
+
+function Section({
+  title,
+  items,
+  editBase,
+  viewBase,
+  newHref,
+}: {
+  title: string;
+  items: Item[];
+  editBase: string;
+  viewBase: string;
+  newHref: string;
+}) {
+  return (
+    <section className="mb-12">
+      <div className="flex items-center justify-between mb-4 pb-2 border-b border-border">
+        <h2 className="font-display text-2xl">{title}</h2>
+        <Link
+          href={newHref}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+        >
+          + New
+        </Link>
+      </div>
+
+      {items.length === 0 ? (
+        <p className="text-ink-secondary text-sm py-2">Nothing here yet.</p>
+      ) : (
+        <div className="space-y-2">
+          {items.map((item) => (
+            <div
+              key={item.slug}
+              className="flex items-center justify-between border border-border rounded px-4 py-3 hover:bg-surface transition"
+            >
+              <div className="flex items-center gap-3">
+                <span className="font-medium">{item.title.en}</span>
+                <span className="text-ink-muted text-sm">{item.title.he}</span>
+                <span
+                  className={`text-xs px-2 py-0.5 rounded ${
+                    item.isPublished
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-gray-100 text-gray-500'
+                  }`}
+                >
+                  {item.isPublished ? 'Published' : 'Draft'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`${editBase}/${item.slug}/edit`}
+                  className="px-3 py-1.5 bg-ink text-canvas rounded text-sm hover:opacity-80"
+                >
+                  Edit
+                </Link>
+                <a
+                  href={`${viewBase}/${item.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 border border-border rounded text-sm hover:bg-canvas"
+                >
+                  View ↗
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}

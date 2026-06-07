@@ -27,7 +27,7 @@ export function ImageOrderer({ tag, currentOrder, onChange }: ImageOrdererProps)
       }
 
       try {
-        const response = await fetch(`/api/cloudinary/tag?tag=${encodeURIComponent(tag)}`);
+        const response = await fetch(`/api/gallery/${encodeURIComponent(tag)}`);
         const data = await response.json();
         const fetchedImages = data.images || [];
 

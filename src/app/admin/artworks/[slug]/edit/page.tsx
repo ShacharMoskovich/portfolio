@@ -57,9 +57,9 @@ export default function EditArtworkPage({
 
     const fetchImages = async () => {
       try {
-        const response = await fetch(`/api/cloudinary/tag?tag=${(formData as any).cloudinaryTag}`);
+        const response = await fetch(`/api/gallery/${encodeURIComponent((formData as any).cloudinaryTag)}`);
         const data = await response.json();
-        setCloudinaryImages(data.resources || []);
+        setCloudinaryImages(data.images || []);
       } catch (err) {
         console.error('Failed to fetch Cloudinary images:', err);
       }
