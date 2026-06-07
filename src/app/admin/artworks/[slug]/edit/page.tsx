@@ -229,19 +229,21 @@ export default function EditArtworkPage({
                   <h3 className="text-sm font-bold text-green-700 mb-3">📸 Select Main Gallery Image</h3>
                   <p className="text-xs text-green-600 mb-4">Choose which image appears in the gallery shadowbox</p>
                   <div className="grid grid-cols-4 gap-3">
-                    {cloudinaryImages.map((img, idx) => (
+                    {cloudinaryImages.map((img, idx) => {
+                      const isSelected = (formData as any).mainImageUrl === img.url;
+                      return (
                       <div key={idx} className="relative group">
                         <img
                           src={img.url}
                           alt={`Image ${idx + 1}`}
                           className={`w-full aspect-square object-cover rounded border-2 cursor-pointer transition ${
-                            (formData as any).mainImageIndex === idx
+                            isSelected
                               ? 'border-green-600 ring-2 ring-green-400'
                               : 'border-gray-300 hover:border-green-500'
                           }`}
                           onClick={() => handleMainImageSelect(idx)}
                         />
-                        {(formData as any).mainImageIndex === idx && (
+                        {isSelected && (
                           <div className="absolute top-1 right-1 bg-green-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
                             ★
                           </div>
@@ -250,15 +252,16 @@ export default function EditArtworkPage({
                           type="button"
                           onClick={() => handleMainImageSelect(idx)}
                           className={`w-full mt-2 py-1 rounded text-xs font-medium transition ${
-                            (formData as any).mainImageIndex === idx
+                            isSelected
                               ? 'bg-green-600 text-white'
                               : 'bg-gray-200 text-gray-700 hover:bg-green-500 hover:text-white'
                           }`}
                         >
-                          {(formData as any).mainImageIndex === idx ? 'Main ★' : 'Set Main'}
+                          {isSelected ? 'Main ★' : 'Set Main'}
                         </button>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
