@@ -1,11 +1,11 @@
 /**
  * blob-data.ts — Vercel Blob read/write for artworks and projects.
  *
- * Uses a PUBLIC blob store (the data is public website content).
+ * Uses a PRIVATE blob store (requires token for access).
  * Falls back to the local JSON files when BLOB_READ_WRITE_TOKEN is not set
  * (i.e. local development without a Blob store configured).
  */
-import { put, list } from '@vercel/blob';
+import { put, get } from '@vercel/blob';
 import type { Artwork, ProjectMeta } from './portfolio/types';
 
 // Build-time fallbacks (bundled into the function at deploy time).
@@ -20,12 +20,10 @@ async function readBlob<T>(key: string, fallback: T[]): Promise<T[]> {
     return fallback; // local dev with no Blob store
   }
   try {
-    const { blobs } = await list({ prefix: key, limit: 1 });
-    if (!blobs.length) return fallback; // store empty (pre-seed)
-    // cache:'no-store' so our function always asks for the current version.
-    const res = await fetch(blobs[0].url, { cache: 'no-store' });
-    if (!res.ok) return fallback;
-    return (await res.json()) as T[];
+    const blob = await get(key, { access: 'private' });
+    if (!blob) return fallback;
+    const text = await blob.text();
+    return JSON.parse(text) as T[];
   } catch {
     return fallback;
   }
@@ -33,11 +31,10 @@ async function readBlob<T>(key: string, fallback: T[]): Promise<T[]> {
 
 async function writeBlob(key: string, data: unknown): Promise<void> {
   await put(key, JSON.stringify(data, null, 2), {
-    access: 'public',
-    addRandomSuffix: false,   // keep a stable, predictable pathname
-    allowOverwrite: true,     // REQUIRED: we overwrite the same file on every save
+    access: 'private',
+    addRandomSuffix: false,
+    allowOverwrite: true,
     contentType: 'application/json',
-    cacheControlMaxAge: 60,   // edits propagate within ~60s (the minimum allowed)
   });
 }
 
