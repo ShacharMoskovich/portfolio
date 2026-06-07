@@ -44,7 +44,9 @@ export async function PUT(
 
     return NextResponse.json({ success: true, artwork: artworks[index] });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to update artwork' }, { status: 500 });
+    console.error('Artwork update error:', error);
+    const errorMsg = error instanceof Error ? error.message : 'Failed to update artwork';
+    return NextResponse.json({ error: errorMsg }, { status: 500 });
   }
 }
 
