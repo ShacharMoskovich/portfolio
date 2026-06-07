@@ -54,22 +54,11 @@ export default async function PortfolioDetailPage({
           )}
         </div>
 
-        {/* MAIN CONTENT SECTION */}
+        {/* MAIN CONTENT SECTION: TEXT LEFT, IMAGE + GALLERY RIGHT */}
         <div className="py-12 md:py-20">
-          <div className="grid grid-cols-1 md:grid-cols-8 gap-8 md:gap-12">
-            {/* IMAGE */}
-            <div className="md:col-span-4">
-              {project.image && (
-                <img
-                  src={project.image}
-                  alt={project.title[locale]}
-                  className="w-full rounded border border-border"
-                />
-              )}
-            </div>
-
-            {/* TEXT */}
-            <div className="md:col-span-4 space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
+            {/* TEXT - LEFT (5 cols) */}
+            <div className="md:col-span-5 space-y-8">
               {/* SUBTITLE */}
               {project.subtitle?.[locale] && (
                 <p className="text-lg text-ink-secondary leading-relaxed font-medium">
@@ -120,12 +109,22 @@ export default async function PortfolioDetailPage({
                 </div>
               )}
             </div>
-          </div>
-        </div>
 
-        {/* PROJECT GALLERY + VIDEO */}
-        <div className="pb-16 md:pb-24">
-          <ProjectGalleryLightbox slug={slug} isAdmin={isAdmin} />
+            {/* IMAGE + GALLERY - RIGHT (7 cols) */}
+            <div className="md:col-span-7 space-y-8">
+              {/* PREVIEW IMAGE */}
+              {project.image && (
+                <img
+                  src={project.image}
+                  alt={project.title[locale]}
+                  className="w-full rounded border border-border"
+                />
+              )}
+
+              {/* PROJECT GALLERY - 3-4 COLUMN MASONRY */}
+              <ProjectGalleryLightbox slug={slug} isAdmin={isAdmin} />
+            </div>
+          </div>
         </div>
       </div>
     </main>
