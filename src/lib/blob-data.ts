@@ -22,7 +22,7 @@ async function readBlob<T>(key: string, fallback: T[]): Promise<T[]> {
     return fallback; // local dev with no Blob store
   }
   try {
-    const result = await get(key, { access: 'private' });
+    const result = await get(key, { access: 'private', useCache: false });
     if (!result || result.statusCode !== 200) return fallback;
     // Wrap the stream in a Response to read it as text cleanly.
     const text = await new Response(result.stream).text();
