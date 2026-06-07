@@ -1,13 +1,7 @@
-import { requireAdmin } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import ArtworksClient from './ArtworksClient';
 
-export const dynamic = 'force-dynamic';
-
-export default async function ArtworksPage() {
-  if (!(await requireAdmin())) {
-    redirect('/admin/login');
-  }
-
-  return <ArtworksClient />;
+// The per-type list page is redundant now that everything lives in the
+// central /admin dashboard. Redirect there.
+export default function Page() {
+  redirect('/admin');
 }

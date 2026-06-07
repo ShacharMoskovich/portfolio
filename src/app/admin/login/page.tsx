@@ -32,7 +32,7 @@ export default async function AdminLoginPage({
       maxAge: 60 * 60 * 12, // 12h, matches token TTL
     });
 
-    redirect("/admin/projects");
+    redirect("/admin");
   }
 
   return (
