@@ -6,14 +6,16 @@
  * (i.e. local development without a Blob store configured).
  */
 import { put, get } from '@vercel/blob';
-import type { Artwork, ProjectMeta } from './portfolio/types';
+import type { Artwork, ProjectMeta, Commission } from './portfolio/types';
 
 // Build-time fallbacks (bundled into the function at deploy time).
 import artworksFallback from '../../public/artworks.json';
 import projectsFallback from '../../public/projects.json';
+import commissionsFallback from '../../public/commissions.json';
 
 const ARTWORKS_KEY = 'data/artworks.json';
 const PROJECTS_KEY = 'data/projects.json';
+const COMMISSIONS_KEY = 'data/commissions.json';
 
 async function readBlob<T>(key: string, fallback: T[]): Promise<T[]> {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
@@ -55,4 +57,12 @@ export async function getProjects(): Promise<ProjectMeta[]> {
 
 export async function saveProjects(projects: ProjectMeta[]): Promise<void> {
   await writeBlob(PROJECTS_KEY, projects);
+}
+
+export async function getCommissions(): Promise<Commission[]> {
+  return readBlob<Commission>(COMMISSIONS_KEY, commissionsFallback as Commission[]);
+}
+
+export async function saveCommissions(commissions: Commission[]): Promise<void> {
+  await writeBlob(COMMISSIONS_KEY, commissions);
 }

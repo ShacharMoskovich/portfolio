@@ -1,57 +1,46 @@
 /**
- * blob-data.ts — Vercel Blob read/write for artworks and projects.
+ * seed-blob.mjs — Run once to upload your current JSON files to Vercel Blob.
  *
- * Uses a PRIVATE blob store (requires token for access).
- * Falls back to the local JSON files when BLOB_READ_WRITE_TOKEN is not set
- * (i.e. local development without a Blob store configured).
+ * Usage:  node seed-blob.mjs
+ * Reads BLOB_READ_WRITE_TOKEN from .env.local (no extra packages needed).
  */
-import { put, get } from '@vercel/blob';
-import type { Artwork, ProjectMeta } from './portfolio/types';
+import { put } from '@vercel/blob';
+import { readFileSync } from 'fs';
 
-// Build-time fallbacks (bundled into the function at deploy time).
-import artworksFallback from '../../public/artworks.json';
-import projectsFallback from '../../public/projects.json';
-
-const ARTWORKS_KEY = 'data/artworks.json';
-const PROJECTS_KEY = 'data/projects.json';
-
-async function readBlob<T>(key: string, fallback: T[]): Promise<T[]> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return fallback; // local dev with no Blob store
-  }
+// --- Load BLOB_READ_WRITE_TOKEN from .env.local (simple manual parser) ---
+if (!process.env.BLOB_READ_WRITE_TOKEN) {
   try {
-    const blob = await get(key, { access: 'private' });
-    if (!blob) return fallback;
-    const text = await blob.text();
-    return JSON.parse(text) as T[];
+    const env = readFileSync('.env.local', 'utf-8');
+    for (const line of env.split('\n')) {
+      const m = line.match(/^\s*BLOB_READ_WRITE_TOKEN\s*=\s*(.+)\s*$/);
+      if (m) {
+        process.env.BLOB_READ_WRITE_TOKEN = m[1].replace(/^["']|["']$/g, '').trim();
+        break;
+      }
+    }
   } catch {
-    return fallback;
+    /* .env.local not found */
   }
 }
 
-async function writeBlob(key: string, data: unknown): Promise<void> {
-  await put(key, JSON.stringify(data, null, 2), {
+if (!process.env.BLOB_READ_WRITE_TOKEN) {
+  console.error('❌  BLOB_READ_WRITE_TOKEN not found in .env.local');
+  process.exit(1);
+}
+
+async function seed(localPath, blobKey) {
+  const content = readFileSync(localPath, 'utf-8');
+  const result = await put(blobKey, content, {
     access: 'private',
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: 'application/json',
   });
+  console.log(`✅  ${blobKey} → ${result.url}`);
 }
 
-// ---- Public API --------------------------------------------------------
-
-export async function getArtworks(): Promise<Artwork[]> {
-  return readBlob<Artwork>(ARTWORKS_KEY, artworksFallback as Artwork[]);
-}
-
-export async function saveArtworks(artworks: Artwork[]): Promise<void> {
-  await writeBlob(ARTWORKS_KEY, artworks);
-}
-
-export async function getProjects(): Promise<ProjectMeta[]> {
-  return readBlob<ProjectMeta>(PROJECTS_KEY, projectsFallback as ProjectMeta[]);
-}
-
-export async function saveProjects(projects: ProjectMeta[]): Promise<void> {
-  await writeBlob(PROJECTS_KEY, projects);
-}
+console.log('Seeding Vercel Blob...\n');
+await seed('public/artworks.json', 'data/artworks.json');
+await seed('public/projects.json', 'data/projects.json');
+await seed('public/commissions.json', 'data/commissions.json');
+console.log('\nDone! Your blob store now has the latest data.');

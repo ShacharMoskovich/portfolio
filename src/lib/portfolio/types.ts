@@ -28,6 +28,7 @@ export interface Artwork {
   imageOrder?: string;
   isPublished?: boolean;
   mainImageIndex?: number; // Index of featured image for gallery thumbnail
+  mainImageUrl?: string;   // Actual URL of the chosen gallery thumbnail
   accent?: string;
 }
 
@@ -52,5 +53,22 @@ export interface ProjectMeta {
   externalUrl?: string;
   cloudinaryTag?: string;
   imageOrder?: string;
+  isPublished?: boolean;
+}
+
+// ==========================================
+// COMMISSION TYPES (for portfolio/commissions sub-works)
+// ==========================================
+
+export interface Commission {
+  slug: string;
+  title: LocalizedText;
+  description: LocalizedText;
+  year?: number;
+  accent?: string;
+  image?: string;           // preview image URL (card thumbnail)
+  cloudinaryTag?: string;   // tag whose images form the gallery
+  imageOrder?: string;
+  mainImageIndex?: number;  // which gallery image is the card preview
   isPublished?: boolean;
 }
