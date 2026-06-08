@@ -6,6 +6,7 @@
  * (i.e. local development without a Blob store configured).
  */
 import { put, get } from '@vercel/blob';
+import { unstable_noStore as noStore } from 'next/cache';
 import type { Artwork, ProjectMeta, Commission } from './portfolio/types';
 
 // Build-time fallbacks (bundled into the function at deploy time).
@@ -18,6 +19,7 @@ const PROJECTS_KEY = 'data/projects.json';
 const COMMISSIONS_KEY = 'data/commissions.json';
 
 async function readBlob<T>(key: string, fallback: T[]): Promise<T[]> {
+  noStore(); // opt out of Next.js Data Cache — always read the latest blob
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     return fallback; // local dev with no Blob store
   }
