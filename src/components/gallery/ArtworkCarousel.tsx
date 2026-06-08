@@ -10,6 +10,7 @@ interface CarouselProps {
 interface CarouselImage {
   url: string;
   publicId: string;
+  resourceType?: 'image' | 'video';
 }
 
 export function ArtworkCarousel({ tag, imageOrder }: CarouselProps) {
@@ -88,9 +89,13 @@ export function ArtworkCarousel({ tag, imageOrder }: CarouselProps) {
 
   return (
     <div className="space-y-4">
-      {/* Main Image */}
+      {/* Main Image / Video */}
       <div className="rounded border border-border overflow-hidden bg-surface relative group">
-        <img src={currentImage.url} alt="Artwork" className="w-full h-auto" />
+        {currentImage.resourceType === 'video' ? (
+          <video src={currentImage.url} controls playsInline className="w-full h-auto" />
+        ) : (
+          <img src={currentImage.url} alt="Artwork" className="w-full h-auto" />
+        )}
         
         {/* Controls Overlay */}
         <div className="absolute inset-0 flex items-center justify-between px-4 opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
@@ -132,7 +137,14 @@ export function ArtworkCarousel({ tag, imageOrder }: CarouselProps) {
               }`}
               aria-label={`Go to image ${idx + 1}`}
             >
-              <img src={img.url} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+              {img.resourceType === 'video' ? (
+                <div className="relative w-full h-full">
+                  <video src={img.url} muted playsInline className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 text-white text-lg">▶</div>
+                </div>
+              ) : (
+                <img src={img.url} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+              )}
             </button>
           ))}
         </div>

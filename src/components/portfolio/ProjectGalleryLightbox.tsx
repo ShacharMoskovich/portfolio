@@ -42,26 +42,7 @@ export function ProjectGalleryLightbox({
         const response = await fetch(`/api/gallery/${slug}`);
         const data = await response.json();
 
-        let galleryImages = data.images || [];
-
-        // Hardcode videos for specific projects
-        if (slug === "nili") {
-          const videoUrl = `https://res.cloudinary.com/dwhfkwjxo/video/upload/f_auto,c_scale,w_800,q_80/shachar-portfolio/nili/nili-video.mp4`;
-          const videoItem: GalleryImage = {
-            url: videoUrl,
-            publicId: "shachar-portfolio/nili/nili-video",
-            width: 1080,
-            height: 1920,
-            caption: "",
-            resourceType: "video",
-          };
-          // Insert video at a better position (3rd item instead of first)
-          if (galleryImages.length >= 3) {
-            galleryImages.splice(2, 0, videoItem);
-          } else {
-            galleryImages.push(videoItem);
-          }
-        }
+        const galleryImages = data.images || [];
 
         setImages(galleryImages);
       } catch (err) {
@@ -169,7 +150,7 @@ export function ProjectGalleryLightbox({
   return (
     <>
       {/* Masonry Grid Layout */}
-      <div className="columns-1 sm:columns-2 md:columns-3 gap-4 space-y-4">
+      <div className="columns-2 md:columns-3 gap-4 space-y-4">
         {images.map((img, idx) => (
           <div
             key={img.publicId}
