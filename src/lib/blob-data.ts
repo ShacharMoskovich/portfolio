@@ -1,70 +1,68 @@
 /**
- * blob-data.ts — Vercel Blob read/write for artworks and projects.
+ * blob-data.ts — Data layer backed by Upstash Redis (Vercel Marketplace).
  *
- * Uses a PRIVATE blob store (requires token for access).
- * Falls back to the local JSON files when BLOB_READ_WRITE_TOKEN is not set
- * (i.e. local development without a Blob store configured).
+ * Redis is strongly consistent: a value written is immediately readable.
+ * (Vercel Blob was eventually consistent on overwrites, which caused saved
+ * edits to disappear — this replaces it.)
+ *
+ * Falls back to the local JSON files when Redis env vars are absent
+ * (i.e. local development without the integration configured).
  */
-import { put, get } from '@vercel/blob';
-import { unstable_noStore as noStore } from 'next/cache';
+import { Redis } from '@upstash/redis';
 import type { Artwork, ProjectMeta, Commission } from './portfolio/types';
 
-// Build-time fallbacks (bundled into the function at deploy time).
+// Build-time fallbacks (used only when Redis isn't configured).
 import artworksFallback from '../../public/artworks.json';
 import projectsFallback from '../../public/projects.json';
 import commissionsFallback from '../../public/commissions.json';
 
-const ARTWORKS_KEY = 'data/artworks.json';
-const PROJECTS_KEY = 'data/projects.json';
-const COMMISSIONS_KEY = 'data/commissions.json';
+const ARTWORKS_KEY = 'artworks';
+const PROJECTS_KEY = 'projects';
+const COMMISSIONS_KEY = 'commissions';
 
-async function readBlob<T>(key: string, fallback: T[]): Promise<T[]> {
-  noStore(); // opt out of Next.js Data Cache — always read the latest blob
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return fallback; // local dev with no Blob store
-  }
+// The Upstash/Vercel integration injects KV_REST_API_* ; the bare Upstash
+// integration injects UPSTASH_REDIS_REST_* . Support both.
+const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+const redis = url && token ? new Redis({ url, token }) : null;
+
+async function read<T>(key: string, fallback: T[]): Promise<T[]> {
+  if (!redis) return fallback; // local dev without Redis configured
   try {
-    const result = await get(key, { access: 'private', useCache: false });
-    if (!result || result.statusCode !== 200) return fallback;
-    // Wrap the stream in a Response to read it as text cleanly.
-    const text = await new Response(result.stream).text();
-    return JSON.parse(text) as T[];
+    const data = await redis.get<T[]>(key);
+    return Array.isArray(data) ? data : fallback;
   } catch {
     return fallback;
   }
 }
 
-async function writeBlob(key: string, data: unknown): Promise<void> {
-  await put(key, JSON.stringify(data, null, 2), {
-    access: 'private',
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    contentType: 'application/json',
-  });
+async function write<T>(key: string, data: T[]): Promise<void> {
+  if (!redis) return;
+  await redis.set(key, data);
 }
 
-// ---- Public API --------------------------------------------------------
+// ---- Public API (unchanged signatures) ---------------------------------
 
 export async function getArtworks(): Promise<Artwork[]> {
-  return readBlob<Artwork>(ARTWORKS_KEY, artworksFallback as Artwork[]);
+  return read<Artwork>(ARTWORKS_KEY, artworksFallback as Artwork[]);
 }
 
 export async function saveArtworks(artworks: Artwork[]): Promise<void> {
-  await writeBlob(ARTWORKS_KEY, artworks);
+  await write(ARTWORKS_KEY, artworks);
 }
 
 export async function getProjects(): Promise<ProjectMeta[]> {
-  return readBlob<ProjectMeta>(PROJECTS_KEY, projectsFallback as ProjectMeta[]);
+  return read<ProjectMeta>(PROJECTS_KEY, projectsFallback as ProjectMeta[]);
 }
 
 export async function saveProjects(projects: ProjectMeta[]): Promise<void> {
-  await writeBlob(PROJECTS_KEY, projects);
+  await write(PROJECTS_KEY, projects);
 }
 
 export async function getCommissions(): Promise<Commission[]> {
-  return readBlob<Commission>(COMMISSIONS_KEY, commissionsFallback as Commission[]);
+  return read<Commission>(COMMISSIONS_KEY, commissionsFallback as Commission[]);
 }
 
 export async function saveCommissions(commissions: Commission[]): Promise<void> {
-  await writeBlob(COMMISSIONS_KEY, commissions);
+  await write(COMMISSIONS_KEY, commissions);
 }

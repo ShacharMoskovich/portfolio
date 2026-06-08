@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@upstash/redis": "^1.38.0",
     "@vercel/blob": "^2.4.0",
     "cloudinary": "^1.41.3",
     "next": "^15.0.0",
