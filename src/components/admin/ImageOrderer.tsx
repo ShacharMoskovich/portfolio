@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 interface Image {
   url: string;
   publicId: string;
+  resourceType?: 'image' | 'video';
 }
 
 interface ImageOrdererProps {
@@ -123,13 +124,20 @@ export function ImageOrderer({ tag, currentOrder, onChange }: ImageOrdererProps)
               draggedItem === img.publicId ? 'opacity-50' : ''
             }`}
           >
-            {/* Image */}
-            <div className="aspect-square rounded border-2 border-border overflow-hidden bg-surface hover:border-ink transition-all">
-              <img
-                src={img.url}
-                alt={`Image ${idx + 1}`}
-                className="w-full h-full object-cover"
-              />
+            {/* Image or Video */}
+            <div className="aspect-square rounded border-2 border-border overflow-hidden bg-surface hover:border-ink transition-all relative">
+              {img.resourceType === 'video' ? (
+                <>
+                  <video src={img.url} muted playsInline className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30 text-white text-2xl pointer-events-none">▶</div>
+                </>
+              ) : (
+                <img
+                  src={img.url}
+                  alt={`Image ${idx + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              )}
             </div>
 
             {/* Order Badge */}

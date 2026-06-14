@@ -1,4 +1,5 @@
 import type { Locale } from "@/lib/portfolio/types";
+import { ContactForm } from "@/components/contact/ContactForm";
 
 export const metadata = {
   title: "Contact",
@@ -14,10 +15,15 @@ export default async function ContactPage({
   const isRtl = locale === "he";
 
   const title = locale === "he" ? "דברו איתי" : "Let's talk";
-  const emailLabel = locale === "he" ? "אימייל" : "Email";
-  const nameLabel = locale === "he" ? "שם" : "Name";
-  const messageLabel = locale === "he" ? "הודעה" : "Message";
-  const submitLabel = locale === "he" ? "שלח" : "Send";
+  const labels = {
+    name: locale === "he" ? "שם" : "Name",
+    email: locale === "he" ? "אימייל" : "Email",
+    message: locale === "he" ? "הודעה" : "Message",
+    submit: locale === "he" ? "שלח" : "Send",
+    sending: locale === "he" ? "שולח..." : "Sending...",
+    success: locale === "he" ? "תודה! ההודעה נשלחה." : "Thanks! Your message was sent.",
+    error: locale === "he" ? "משהו השתבש. נסו שוב." : "Something went wrong. Please try again.",
+  };
 
   return (
     <main className="bg-canvas text-ink min-h-screen" dir={isRtl ? "rtl" : "ltr"}>
@@ -25,47 +31,7 @@ export default async function ContactPage({
         <h1 className={`font-display text-5xl md:text-7xl leading-[0.95] tracking-tight mb-12 text-center ${isRtl ? "font-display-he" : ""}`}>
           {title}
         </h1>
-
-        <form className="space-y-6" action="mailto:moskovicher93@gmail.com" method="POST" encType="text/plain">
-          <div>
-            <label className="block text-sm font-medium mb-2">{nameLabel}</label>
-            <input
-              type="text"
-              name="name"
-              required
-              className="w-full border border-border rounded px-4 py-3 bg-canvas"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">{emailLabel}</label>
-            <input
-              type="email"
-              name="email"
-              required
-              className="w-full border border-border rounded px-4 py-3 bg-canvas"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">{messageLabel}</label>
-            <textarea
-              name="message"
-              rows={6}
-              required
-              className="w-full border border-border rounded px-4 py-3 bg-canvas"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-ink text-canvas py-3 rounded font-medium hover:opacity-80 transition-opacity"
-          >
-            {submitLabel}
-          </button>
-        </form>
-
-        
+        <ContactForm labels={labels} />
       </section>
     </main>
   );

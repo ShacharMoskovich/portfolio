@@ -60,15 +60,18 @@ export default function middleware(req: NextRequest) {
     return new NextResponse("Too Many Requests", { status: 429 });
   }
 
-  // Geo-based locale detection: Israeli IP -> Hebrew.
+  // Geo-based locale detection: Israeli IP -> Hebrew, otherwise English.
+  // Always redirect un-prefixed paths (including the bare root) so
+  // shachart.com never 404s.
   const country = req.headers.get("x-vercel-ip-country");
   const hasLocalePrefix =
     pathname.startsWith("/he") || pathname.startsWith("/en");
 
-  if (!hasLocalePrefix && country && !pathname.startsWith("/admin")) {
+  if (!hasLocalePrefix && !pathname.startsWith("/admin")) {
     const locale = country === "IL" ? "he" : "en";
     const url = req.nextUrl.clone();
-    url.pathname = `/${locale}${pathname}`;
+    // Avoid a double slash for the root path ("/" -> "/en", not "/en/").
+    url.pathname = pathname === "/" ? `/${locale}` : `/${locale}${pathname}`;
     return NextResponse.redirect(url);
   }
 

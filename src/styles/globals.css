@@ -2,14 +2,14 @@
 
 @font-face {
   font-family: 'Tushiaeng';
-  src: url('/fonts/Tushiaeng.otf') format('opentype');
+  src: url('/fonts/Tushiaeng-Regular.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Tushia2';
-  src: url('/fonts/Tushia2.otf') format('opentype');
+  src: url('/fonts/Tushia2-Regular.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
