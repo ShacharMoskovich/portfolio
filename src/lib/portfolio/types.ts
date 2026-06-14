@@ -72,3 +72,21 @@ export interface Commission {
   mainImageIndex?: number;  // which gallery image is the card preview
   isPublished?: boolean;
 }
+
+// ==========================================
+// SHOP PRODUCT TYPES
+// ==========================================
+
+export interface ShopProduct {
+  slug: string;
+  title: LocalizedText;
+  description: LocalizedText;
+  price?: string;           // display string, e.g. "₪120" or "$40"
+  available?: boolean;      // in stock / orderable
+  accent?: string;
+  image?: string;           // card preview image URL
+  cloudinaryTag?: string;   // tag whose images form the product gallery
+  imageOrder?: string;
+  mainImageUrl?: string;
+  isPublished?: boolean;
+}

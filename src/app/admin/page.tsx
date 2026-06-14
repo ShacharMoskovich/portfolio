@@ -13,16 +13,20 @@ export default function AdminDashboard() {
   const [artworks, setArtworks] = useState<Item[]>([]);
   const [projects, setProjects] = useState<Item[]>([]);
   const [commissions, setCommissions] = useState<Item[]>([]);
+  const [shop, setShop] = useState<Item[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     async function loadAll() {
       try {
-        const [aRes, pRes, cRes] = await Promise.all([
+        const [aRes, pRes, cRes, sRes, mRes] = await Promise.all([
           fetch('/api/admin/artworks'),
           fetch('/api/admin/projects'),
           fetch('/api/admin/commissions'),
+          fetch('/api/admin/shop'),
+          fetch('/api/admin/messages'),
         ]);
 
         if (aRes.status === 401 || pRes.status === 401 || cRes.status === 401) {
@@ -33,10 +37,14 @@ export default function AdminDashboard() {
         const aData = await aRes.json();
         const pData = await pRes.json();
         const cData = await cRes.json();
+        const sData = await sRes.json();
+        const mData = await mRes.json();
 
         setArtworks(aData.artworks || []);
         setProjects(pData.projects || []);
         setCommissions(cData.commissions || []);
+        setShop(sData.products || []);
+        setMessages(mData.messages || []);
       } catch (err) {
         setError('Failed to load dashboard data');
       } finally {
@@ -94,6 +102,37 @@ export default function AdminDashboard() {
         viewBase="/en/portfolio/commissions"
         newHref="/admin/commissions/new"
       />
+
+      <Section
+        title="Shop"
+        items={shop}
+        editBase="/admin/shop"
+        viewBase="/en/shop"
+        newHref="/admin/shop/new"
+      />
+
+      {/* Contact messages (read-only) */}
+      <section className="mb-12">
+        <h2 className="font-display text-2xl mb-4 pb-2 border-b border-border">
+          Messages {messages.length > 0 && <span className="text-sm text-ink-secondary">({messages.length})</span>}
+        </h2>
+        {messages.length === 0 ? (
+          <p className="text-ink-secondary text-sm py-2">No messages yet.</p>
+        ) : (
+          <div className="space-y-3">
+            {messages.map((m: any) => (
+              <div key={m.id} className="border border-border rounded px-4 py-3">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-medium">{m.name}</span>
+                  <span className="text-xs text-ink-muted">{new Date(m.createdAt).toLocaleString()}</span>
+                </div>
+                <a href={`mailto:${m.email}`} className="text-sm text-blue-600 hover:underline">{m.email}</a>
+                <p className="text-sm mt-2 whitespace-pre-line">{m.message}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

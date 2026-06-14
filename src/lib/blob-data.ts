@@ -9,16 +9,18 @@
  * (i.e. local development without the integration configured).
  */
 import { Redis } from '@upstash/redis';
-import type { Artwork, ProjectMeta, Commission } from './portfolio/types';
+import type { Artwork, ProjectMeta, Commission, ShopProduct } from './portfolio/types';
 
 // Build-time fallbacks (used only when Redis isn't configured).
 import artworksFallback from '../../public/artworks.json';
 import projectsFallback from '../../public/projects.json';
 import commissionsFallback from '../../public/commissions.json';
+import shopFallback from '../../public/shop.json';
 
 const ARTWORKS_KEY = 'artworks';
 const PROJECTS_KEY = 'projects';
 const COMMISSIONS_KEY = 'commissions';
+const SHOP_KEY = 'shop';
 
 // The Upstash/Vercel integration injects KV_REST_API_* ; the bare Upstash
 // integration injects UPSTASH_REDIS_REST_* . Support both.
@@ -65,4 +67,38 @@ export async function getCommissions(): Promise<Commission[]> {
 
 export async function saveCommissions(commissions: Commission[]): Promise<void> {
   await write(COMMISSIONS_KEY, commissions);
+}
+
+export async function getShopProducts(): Promise<ShopProduct[]> {
+  return read<ShopProduct>(SHOP_KEY, shopFallback as ShopProduct[]);
+}
+
+export async function saveShopProducts(products: ShopProduct[]): Promise<void> {
+  await write(SHOP_KEY, products);
+}
+
+// ---- Contact messages --------------------------------------------------
+
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  createdAt: string;
+}
+
+const MESSAGES_KEY = 'messages';
+
+export async function getMessages(): Promise<ContactMessage[]> {
+  return read<ContactMessage>(MESSAGES_KEY, []);
+}
+
+export async function addMessage(msg: ContactMessage): Promise<void> {
+  const all = await getMessages();
+  all.unshift(msg); // newest first
+  await write(MESSAGES_KEY, all);
+}
+
+export async function saveMessages(messages: ContactMessage[]): Promise<void> {
+  await write(MESSAGES_KEY, messages);
 }

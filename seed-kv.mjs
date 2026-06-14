@@ -40,4 +40,5 @@ console.log('Seeding Redis...\n');
 await seedIfEmpty('public/artworks.json', 'artworks');
 await seedIfEmpty('public/projects.json', 'projects');
 await seedIfEmpty('public/commissions.json', 'commissions');
+ await seedIfEmpty('public/shop.json', 'shop');
 console.log('\nDone.');
